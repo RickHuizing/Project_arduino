@@ -7,7 +7,7 @@ import sched
 # 'a string'
 # >>> 'a string'.encode('ascii')
 # b'a string'
-#hoi rick
+
 class Arduino:
 
     def __init__(self, port):

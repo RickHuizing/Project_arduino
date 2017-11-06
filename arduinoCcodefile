@@ -1,0 +1,142 @@
+/*
+ * GccApplication3.c
+ *
+ * Created: 18-10-2017 12:58:29
+ *  Author: Lenovo T420
+ */
+
+#include <avr/io.h>
+#include <stdlib.h>
+#include <avr/sfr_defs.h>
+#define F_CPU 16E6
+#include <util/delay.h>
+
+// output on USB = PD1 = board pin 1
+// datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
+#define UBBRVAL 51
+int get_temp()
+{
+	return "15";
+}
+int get_light()
+{
+	return "100";
+}
+int get_distance()
+{
+	return "150";
+}
+int main(void)
+{
+	ser_init();
+	_delay_ms(1000);
+
+	DDRB=0; // read (pin 0+1)
+	DDRD=4+8; // write (pin 2+3)
+	PORTD|=4; // standaard één led aan
+
+	char buffer[200];
+	while(1) {
+		ser_readln(buffer, 200);
+		uint8_t ok=0;
+		if (!strcmp(buffer, "hello")) {
+			ser_writeln("IkBenEr!");
+			ok=1;
+		}
+		if (!strcmp(buffer, "info")) {
+			ser_writeln("Ledjes demo v1.0 Arduino (c)2017 MESM");
+			ok=1;
+		}
+		if (!strcmp(buffer, "led1aan")) {
+			PORTD|=4;
+			ok=1;
+		}
+		if (!strcmp(buffer, "led1uit")) {
+			PORTD&=~4;
+			ok=1;
+		}
+		if (!strcmp(buffer, "led2aan")) {
+			PORTD|=8;
+			ok=1;
+		}
+		if (!strcmp(buffer, "led2uit")) {
+			PORTD&=~8;
+			ok=1;
+		}
+		if (!strcmp(buffer, "get_temp")) {
+			ser_writeln(get_temp());
+			ok=1;
+		}
+		if (!strcmp(buffer, "get_light")) {
+			ser_writeln(get_light());
+			ok=1;
+		}
+		if (!strcmp(buffer, "get_distance")) {
+			ser_writeln(get_distance());
+			ok=1;
+		}
+		if (!strcmp(buffer, "reset")) {
+			main();
+
+		}
+		if (ok==0) {
+			ser_writeln("Unknown command!");
+		}
+		if (ok==1) {
+			ser_writeln("OK");
+		} else {
+			ser_writeln("ERR");
+		}
+	}
+}
+void transmit(uint8_t data)
+{
+	// wait for an empty transmit buffer
+	// UDRE is set when the transmit buffer is empty
+	loop_until_bit_is_set(UCSR0A, UDRE0);
+	// send the data
+	UDR0 = data;
+}
+
+void ser_writeln(const char* line){
+	for(size_t i=0; i<strlen(line); i++){
+		transmit(line[i]);
+	}
+	transmit('\n');
+}
+//UIT DE MAIL----------------------------------------
+// Serial init functie, die zorgt voor data-transport in beide richtingen
+
+void ser_init() {
+	// Set baud rate
+	UBRR0H = 0;
+	UBRR0L = UBBRVAL;
+	// disable U2X mode
+	UCSR0A = 0;
+	// enable TX and RX
+	UCSR0B = _BV(RXEN0) | _BV(TXEN0);
+	// set frame format: asynchronous, 8 data bits, 1 stop bit, no parity
+	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
+}
+
+// Serial read functie in C
+
+char ser_read() {
+	loop_until_bit_is_set(UCSR0A, RXC0); /* Wait until data exists. */
+	return UDR0;
+}
+
+// Serial readln functie in C (van computer naar Arduino)
+// Begrijp je wat deze functie doet?
+
+void ser_readln(char *line, uint8_t bufsize) {
+	uint8_t p=0;
+	char c;
+	do {
+		c=ser_read();
+		if (c!='\n') {
+			line[p++]=c;
+		}
+		line[p]='\0';
+	} while ((c!='\n') && (p<bufsize-1));
+}
