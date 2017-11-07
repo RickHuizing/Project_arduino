@@ -50,7 +50,7 @@ class Arduino:
     # Functie request
     #    argment: command -> commando voor Arduino
     #    return value: tuple met daarin statuscode (OK of ERR) en evt. aanvullende info
-    '''
+
     def request(self, command):
         self.ser.write((command + "\n").encode('ascii'))  # Let op! pyserial heeft geen writeline, zelf \n aan string toevoegen!
         extra_info = None
@@ -61,18 +61,7 @@ class Arduino:
             if l not in ["OK", "ERR"]:
                 l = None
         return (l, extra_info)
-    '''
-    def request(self, command):
-        self.ser.write((command + "\n").encode('ascii'))  # Let op! pyserial heeft geen writeline, zelf \n aan string toevoegen!
-        #print((command + "\n").encode('ascii'))
-        extra_info = None
-        l = self.ser.readline().decode('ascii').strip()
-        if l not in ["OK", "ERR"]:
-            extra_info = l
-            l = self.ser.readline().decode('ascii').strip()
-            if l not in ["OK", "ERR"]:
-                l = None
-        return (l, extra_info)
+
 
     def start(self):
         # Handshake
