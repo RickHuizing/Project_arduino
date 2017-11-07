@@ -44,7 +44,8 @@ class Controller:
         # update arduino's and detect ones that are disconnected
         for a in controller.connectedArduinoList.values():
             try:
-                a.request("info")
+                #a.request("info")
+                print(a.request("get_temp"))
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
                 print(sys.exc_info())
