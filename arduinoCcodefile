@@ -51,7 +51,31 @@ int get_temp()
 }
 int get_light()
 {
-	return "100";
+		int tempPin = 1;
+		uint8_t low, high;
+		//lees input voltage
+		ADMUX = (1 << 6) | (0x01);
+		// converteer naar een hexadecimaal getal
+		ADCSRA |= 1<<ADPS0; 	//Set ADC prescaler to division factor of 128 (16,000,000/128,000 = 125Hz)
+		ADCSRA |= 1<<ADPS1;
+		ADCSRA |= 1<<ADPS2;
+
+		ADCSRA |= _BV(ADEN);
+		ADCSRA |= _BV(ADSC);
+		while (bit_is_set(ADCSRA, ADSC));
+		low  = ADCL;
+		high = ADCH;
+
+		// combine the two bytes
+		int input = (high << 8) | low;
+		float voltage = input * 5.0;
+		//voltage /= 1024.0;
+
+		int intpart = floor(voltage);
+		char buffer [100];
+		int cx;
+		cx = snprintf ( buffer, 100, "The temp is %d", intpart);
+	return buffer;
 }
 int get_distance()
 {

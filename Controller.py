@@ -46,6 +46,8 @@ class Controller:
             try:
                 #a.request("info")
                 print(a.request("get_temp"))
+                time.sleep(1)
+                print(a.request("get_light"))
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
                 print(sys.exc_info())
@@ -76,6 +78,7 @@ class Controller:
     # find arduino's by going through all active usb ports
     def findarduino(self):
         ports = list_ports_windows.comports()
+
         port_list = []
         for x in ports:
             if 'Arduino' in x.__str__():
@@ -84,8 +87,7 @@ class Controller:
 
 
 controller = Controller()
-s = sched.scheduler(time.time, time.sleep)
-#s.enterabs()
+
 while True:
     try:
         controller.update()
