@@ -31,7 +31,6 @@ int main(void)
         PORTD &=~(1<<PIND0);
 
         COUNTA = pulse/58;
-
     }
 }
 

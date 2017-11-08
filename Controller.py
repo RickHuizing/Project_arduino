@@ -2,7 +2,6 @@ import arduino
 import sys
 import time
 from serial.tools import list_ports_windows
-import sched
 
 
 class Controller:
@@ -22,7 +21,6 @@ class Controller:
                 print('added arduino on port: '+port)
                 self.arduino_list[port].start()
             except OSError:
-                print (type(port))
                 print(sys.exc_info()[1])
                 print('Could not add arduino on port: ' + port)
         else:
@@ -46,12 +44,11 @@ class Controller:
             try:
                 #a.request("info")
                 print(a.request("get_temp"))
-                time.sleep(1)
-                print(a.request("get_light"))
+                print(a.request("get_light"))#2100-2200 9:50PM met lampen aan
+                print(a.request("get_distance"))
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
                 print(sys.exc_info())
-
 
     # add arduino's to the active arduino list by COM port
     def updateArduinoList(self):
@@ -87,13 +84,10 @@ class Controller:
 
 
 controller = Controller()
-
-
 while True:
     try:
         controller.update()
     except:
         print('oeps')
         print(sys.exc_info())
-    arduino.time.sleep(1)
-
+    time.sleep(3)

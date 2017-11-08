@@ -8,9 +8,12 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <avr/sfr_defs.h>
+
 #define F_CPU 16E6
+//#define F_CPU 20000000
 #include <util/delay.h>
 #include <math.h>
+ #include <avr/interrupt.h>
 // output on USB = PD1 = board pin 1
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
 #define UBBRVAL 51
@@ -18,19 +21,19 @@ char ADCOut[10];
 int get_temp()
 {
 	int input = read_analog_pin(0);
-
 	// converting that reading to voltage, for 3.3v arduino use 3.3
 	float voltage = input * 5.0;
 	voltage /= 1024.0;
 
 	// now print out the temperature
 	float temperatuur = (voltage - 0.5) * 100 ;  //to degrees ((voltage - 500mV) * 100)
+
 	int intpart = floor(temperatuur);
 	int decpart = ceil((temperatuur-intpart)*100);
 
 	char buffer [100];
 	int cx;
-	cx = snprintf ( buffer, 100, "The temp is %d.%d", intpart, decpart);
+	cx = snprintf ( buffer, 100, "The temperature is %d.%d degrees C", intpart, decpart);
 	return buffer;
 }
 int get_light()
@@ -42,10 +45,10 @@ int get_light()
 		int intpart = floor(voltage);
 		char buffer [100];
 		int cx;
-		cx = snprintf ( buffer, 100, "The light level is %d", intpart);
+		cx = snprintf ( buffer, 100, "The light level is %d lux oid", intpart);
 	return buffer;
 }
-//returns the reading of the choosen analog pin
+//returns the reading of the chosen analog pin
 int read_analog_pin(pin){
 	int tempPin = pin;
 	uint8_t low, high;
@@ -66,9 +69,82 @@ int read_analog_pin(pin){
 	int input = (high << 8) | low;
 	return input;
 }
+
+#define TrigPin PIND4
+#define EchoPin PIND2
+
+volatile uint8_t pingState = 0;
+volatile float echoInches = 0;
 int get_distance()
 {
-	return "150";
+	// Turn on timer with no prescaler on the clock for fastest
+	// triggering of the interrupt service routine.
+	TCCR1B = (1<<CS10);
+	TIMSK1 = (1<<TOIE1);
+
+	PCICR = (1<<PCIE2);
+	PCMSK2 = (1<<PCINT18);
+
+	DDRD = (1<<TrigPin);		// Set Pins As Output
+	TCNT1 = 0;
+	echoInches = 0;
+	sei();
+	while (pingState != 3)
+	{
+		switch (pingState){
+			case 0:
+
+				PORTD &= ~(1<<TrigPin);			// Set Trigger Pin To 0
+				_delay_ms(1);					// Wait
+				PORTD |= (1<<TrigPin);			// Set Trigger Pin To 1
+				_delay_ms(1);					// Wait
+				PORTD &= ~(1<<TrigPin);			// Set Trigger Pin To 0
+				pingState++;					// Increment State
+				break;
+			case 1:
+				// While In This Case, Do Nothing
+				break;
+			case 2:
+				if(echoInches == -1){	// If Overflow Occured
+					PORTD &= ~(1<<TrigPin);			// Set Trigger Pin To 0
+					_delay_ms(1);					// Wait
+					PORTD |= (1<<TrigPin);			// Set Trigger Pin To 1
+					_delay_ms(1);					// Wait
+					PORTD &= ~(1<<TrigPin);			// Set Trigger Pin To 0
+					pingState = 1;					// Increment State
+					//dit omdat hij de timer opnieuw laat lopen bij een overflow en ik niet weet hoe je hem uit zet
+					break;
+				}else{							// Otherwise
+
+				}
+				pingState++;					// Increment State
+				break;
+			}
+	}
+	pingState = 0;
+	echoInches /= 1000;
+	int intpart = floor(echoInches);
+	int decpart = ceil((echoInches-intpart)*100);
+	char buffer [100];
+	int cx;
+	cx = snprintf ( buffer, 100, "Shakespeare is %d.%d cm away", intpart, decpart);
+	return buffer;
+}
+
+ISR(PCINT2_vect){
+	if(PIND & (1<<EchoPin)){					// If EchoPin Is High
+		TCNT1 = 0;								// Reset Timer
+		TCCR1B |= (1<<CS10);					// Enable Timer
+	}else{										// Othewise
+		TCCR1B &= ~(1<<CS10);					// Disable Timer
+		echoInches = TCNT1;//148;					// Count echoInches
+		pingState = 2;							// Increment State
+	}
+}
+ISR(TIMER1_OVF_vect){
+	TCCR1B &= ~(1<<CS10);						// Enable Timer // hierdoor blijft hij (volgens mij) overflows genereren
+	echoInches = -1;							// Set -1 As echoInches For Overflow
+	pingState = 2;								// Increment State
 }
 int main(void)
 {
@@ -104,6 +180,7 @@ int main(void)
 			ok=1;
 		}
 		if (!strcmp(buffer, "led2uit")) {
+
 			PORTD&=~8;
 			ok=1;
 		}
