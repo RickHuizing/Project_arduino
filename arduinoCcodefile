@@ -17,23 +17,7 @@
 char ADCOut[10];
 int get_temp()
 {
-	int tempPin = 0;
-	uint8_t low, high;
-	//lees input voltage
-	ADMUX = (1 << 6) | (tempPin & 0x00);
-	// converteer naar een hexadecimaal getal
-	ADCSRA |= 1<<ADPS0; 	//Set ADC prescaler to division factor of 128 (16,000,000/128,000 = 125Hz)
-	ADCSRA |= 1<<ADPS1;
-	ADCSRA |= 1<<ADPS2;
-
-	ADCSRA |= _BV(ADEN);
-	ADCSRA |= _BV(ADSC);
-	while (bit_is_set(ADCSRA, ADSC));
-	low  = ADCL;
-	high = ADCH;
-
-	// combine the two bytes
-	int input = (high << 8) | low;
+	int input = read_analog_pin(0);
 
 	// converting that reading to voltage, for 3.3v arduino use 3.3
 	float voltage = input * 5.0;
@@ -51,31 +35,36 @@ int get_temp()
 }
 int get_light()
 {
-		int tempPin = 1;
-		uint8_t low, high;
-		//lees input voltage
-		ADMUX = (1 << 6) | (0x01);
-		// converteer naar een hexadecimaal getal
-		ADCSRA |= 1<<ADPS0; 	//Set ADC prescaler to division factor of 128 (16,000,000/128,000 = 125Hz)
-		ADCSRA |= 1<<ADPS1;
-		ADCSRA |= 1<<ADPS2;
-
-		ADCSRA |= _BV(ADEN);
-		ADCSRA |= _BV(ADSC);
-		while (bit_is_set(ADCSRA, ADSC));
-		low  = ADCL;
-		high = ADCH;
-
-		// combine the two bytes
-		int input = (high << 8) | low;
+		int input = read_analog_pin(1);
 		float voltage = input * 5.0;
 		//voltage /= 1024.0;
 
 		int intpart = floor(voltage);
 		char buffer [100];
 		int cx;
-		cx = snprintf ( buffer, 100, "The temp is %d", intpart);
+		cx = snprintf ( buffer, 100, "The light level is %d", intpart);
 	return buffer;
+}
+//returns the reading of the choosen analog pin
+int read_analog_pin(pin){
+	int tempPin = pin;
+	uint8_t low, high;
+	//lees input voltage
+	ADMUX = (1 << 6) | (pin);
+	// converteer naar een hexadecimaal getal
+	ADCSRA |= 1<<ADPS0; 	//Set ADC prescaler to division factor of 128 (16,000,000/128,000 = 125Hz)
+	ADCSRA |= 1<<ADPS1;
+	ADCSRA |= 1<<ADPS2;
+
+	ADCSRA |= _BV(ADEN);
+	ADCSRA |= _BV(ADSC);
+	while (bit_is_set(ADCSRA, ADSC));
+	low  = ADCL;
+	high = ADCH;
+
+	// combine the two bytes
+	int input = (high << 8) | low;
+	return input;
 }
 int get_distance()
 {
