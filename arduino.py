@@ -110,6 +110,32 @@ class Arduino:
         if r[0] == 'OK':
             self.temperature_history[key] = r[1]
 
+    def get_light_threshold(self):
+        lightThres = self.request("get_light_thres")
+        return lightThres
+    def light_threshold_plus(self):
+        self.request("light_thres_plus")
+    def light_threshold_min(self):
+        self.request("light_thres_min")
+
+    def get_temp_threshold(self):
+        tempThres = self.request("get_temp_thres")
+        return tempThres
+    def temperature_threshold_plus(self):
+        self.request("temp_thres_plus")
+    def temperature_threshold_min(self):
+        self.request("temp_thres_min")
+
+    def get_distance_threshold(self):
+        dist_thres = self.request("get_dist_thres")
+        return dist_thres
+
+    def distance_threshold_plus(self):
+        self.request("dist_thres_plus")
+
+    def distance_threshold_min(self):
+        self.request("dist_thres_min")
+
 
 
 

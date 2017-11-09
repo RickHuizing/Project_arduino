@@ -45,7 +45,7 @@ class Controller:
         del self.connectedArduinoList[port]
         print('disconnected arduino')
 
-    #general update functie
+    # general update functie
     # TODO: is niet erg netjes en kan dus waarschijnlijk vervangen worden
     def update(self):
         # update the list of active arduino's
@@ -54,10 +54,7 @@ class Controller:
         for a in controller.connectedArduinoList.values():
             try:
                 a.update()
-                #a.request("info")
-                #print(a.request("get_temp"))
-                #print(a.request("get_light"))#2100-2200 9:50PM met lampen aan
-                #print(a.request("get_distance"))
+                # a.request("info")
                 print(a.type)
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
