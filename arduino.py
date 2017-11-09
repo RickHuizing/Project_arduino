@@ -1,7 +1,6 @@
 import serial
 import time
 import sys
-import sched
 
 # >>> b'a string'.decode('ascii')
 # 'a string'
@@ -11,14 +10,14 @@ import sched
 class Arduino:
 
     def __init__(self, port):
-        #except:
-        #    print('seriele connectie met arduino niet gelukt')
-        #    print(sys.exc_info())
-
+        #COM port (string)
         self.port = port
+        # geeft aan of er een seriele connectie actief is
         self.serial_connection = False
+        # initialiseer seriele connectie
         self.ser_init()
 
+        self.type = 0
 
         #drempelwaarden voor het dalen/stoppen met dalen van het rolluik
         self.distance_threshold = 0.02  #in m
@@ -37,12 +36,12 @@ class Arduino:
         self.light_history = {}
         self.temperature_history = {}
 
-
+    # initieer seriele connectie, baud rate 19200
     def ser_init(self):
-        # initieer seriele connectie
         self.ser = serial.Serial(self.port, 19200, timeout=1)
         self.serial_connection = True
 
+    # sluit seriele connectie
     def ser_close(self):
         self.ser.close()
         self.serial_connection = False
@@ -50,7 +49,6 @@ class Arduino:
     # Functie request
     #    argment: command -> commando voor Arduino
     #    return value: tuple met daarin statuscode (OK of ERR) en evt. aanvullende info
-
     def request(self, command):
         self.ser.write((command + "\n").encode('ascii'))  # Let op! pyserial heeft geen writeline, zelf \n aan string toevoegen!
         extra_info = None
@@ -62,7 +60,7 @@ class Arduino:
                 l = None
         return (l, extra_info)
 
-
+    # probeer een handshake te maken(= checken of er verbinding is)
     def start(self):
         # Handshake
         tries_left = 3
@@ -79,34 +77,34 @@ class Arduino:
                 if (tries_left == 0):
                     print("Handshake failed")
 
-        # Informatie opvragen
-        '''
-        r = self.request("info")
-        if (r[0] == "OK"):
-            print("Informatie embedded software: " + r[1]);
+    def update(self):
+        if self.type != 0:
+            if self.type == 1:
+                self.update_light()
+            elif self.type == 2:
+                self.update_temperature()
+            self.update_distance()
         else:
-            print("Fout opgetreden bij opvragen informatie embedded software");
-        '''
+            self.set_type()
 
+    # haal de data van de sonar sensor op en sla het op met de huidige uur:minuut
     def update_distance(self):
         key = time.strftime('%X')[:8]
         r = self.request("get_distance")
         if r[0] == 'OK':
-            self.distance_history[key] = r[1] + 'cm'
+            self.distance_history[key] = r[1]
 
+    # haal de data van de photocell sensor op en sla het op met de huidige uur:minuut
     def update_light(self):
-        print('hai')
         key = time.strftime('%X')[:8]
         r = self.request("get_light")
         if r[0] == 'OK':
             self.light_history[key] = r[1]
 
+    # haal de data van de thermometer op en sla het op met de huidige uur:minuut
     def update_temperature(self):
         key = time.strftime('%X')[:8]
         r = self.request("get_temp")
         if r[0] == 'OK':
             self.temperature_history[key] = r[1]
-
-
-
 
