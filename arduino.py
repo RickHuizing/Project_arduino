@@ -46,6 +46,9 @@ class Arduino:
         self.ser.close()
         self.serial_connection = False
 
+    def set_type(self):
+        self.type = int(self.request("get_type")[1])
+
     # Functie request
     #    argment: command -> commando voor Arduino
     #    return value: tuple met daarin statuscode (OK of ERR) en evt. aanvullende info

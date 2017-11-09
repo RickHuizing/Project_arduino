@@ -18,6 +18,10 @@
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
 #define UBBRVAL 51
 char ADCOut[10];
+//typen: UNDEFINED = 0,	LICHT = 1,	TEMPERATUUR = 2
+
+int besturingsType = 1;
+
 int get_temp()
 {
 	int input = read_analog_pin(0);
@@ -146,6 +150,12 @@ ISR(TIMER1_OVF_vect){
 	echoInches = -1;							// Set -1 As echoInches For Overflow
 	pingState = 2;								// Increment State
 }
+int get_type(){
+		char buffer [100];
+		int cx;
+		cx = snprintf ( buffer, 100, "%d", besturingsType);
+		return buffer;
+}
 int main(void)
 {
 	ser_init();
@@ -165,6 +175,10 @@ int main(void)
 		}
 		if (!strcmp(buffer, "info")) {
 			ser_writeln("Ledjes demo v1.0 Arduino (c)2017 MESM");
+			ok=1;
+		}
+		if (!strcmp(buffer, "get_type")) {
+			ser_writeln(get_type());
 			ok=1;
 		}
 		if (!strcmp(buffer, "led1aan")) {

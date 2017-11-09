@@ -58,6 +58,7 @@ class Controller:
                 #print(a.request("get_temp"))
                 #print(a.request("get_light"))#2100-2200 9:50PM met lampen aan
                 #print(a.request("get_distance"))
+                print(a.type)
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
                 print(sys.exc_info())
