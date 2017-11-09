@@ -77,6 +77,15 @@ class Arduino:
                 if (tries_left == 0):
                     print("Handshake failed")
 
+    def update(self):
+        if self.type != 0:
+            if self.type == 1:
+                self.update_light()
+            elif self.type == 2:
+                self.update_temperature()
+            self.update_distance()
+        else:
+            self.set_type()
     # haal de data van de sonar sensor op en sla het op met de huidige uur:minuut
     def update_distance(self):
         key = time.strftime('%X')[:8]
