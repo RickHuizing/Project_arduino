@@ -14,6 +14,8 @@ class Controller:
         # lijst met arduino's waarvan de verbinding verbroken is
         self.disconnectedArduinoList = []
 
+        self.autoArduinoList = {}
+
         self.updateTime = 0
 
     # voegt een arduino toe aan de lijst met arduino's en maakt handshake
@@ -45,34 +47,65 @@ class Controller:
         del self.connectedArduinoList[port]
         print('disconnected arduino')
 
+    def goAuto(self, luik):
+        print(luik.request('go_auto'))
+        luik.ser_close()
+        self.autoArduinoList[luik.port] = luik
+    def stopAuto(self, luik):
+        del self.autoArduinoList[luik.port]
+        luik.ser_init()
+        '''
+        while 1:
+            x = luik.ser.readline().decode('ascii').strip()
+            if x == '':
+                break
+                '''
+
+
     # general update functie
     # TODO: is niet erg netjes en kan dus waarschijnlijk vervangen worden
     def update(self):
         # update the list of active arduino's
         controller.updateArduinoList()
         # update arduino's and detect ones that are disconnected
+
         for a in controller.connectedArduinoList.values():
             try:
-                a.update()
+                b=a
+                #a.update()
                 # a.request("info")
-                # a.go_auto()
+                #a.sendCommand("get_distance")
+                #a.sendCommand("get_dist_thres")
+                #a.sendCommand("get_temp")
+                a.sendCommand("get_temp_thres")
+                #a.sendCommand("up")
 
-                #print(a.get_temp_threshold())
-                #print(a.request("get_temp"))
-                #time.sleep(3)
-                #print(a.request("get_temp"))
-                print(a.request("get_distance"))
-                time.sleep(0.01)
-                print(a.request("get_dist_thres"))
-                #a.request("up")
-                #time.sleep(1)
-                #a.request("up")
-                #a.stop_auto()
+                print(a.ser.readline().decode('ascii').strip())
+                print(a.ser.readline().decode('ascii').strip())
+                #time.sleep(1.25)
+                #a.sendCommand("down")
+                #a.sendCommand(str(input(": ")))
+                print(a.ser.readline().decode('ascii').strip())
+                print(a.ser.readline().decode('ascii').strip())
+                a.sendCommand("get_temp")
+                bla = int(input(": "))
+                if bla==1:
+                    self.stopAuto(a)
+                if bla ==0:
+                    self.goAuto(a)
 
-                #a.temperature_threshold_plus()
-                #print(a.type)
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
+                print(sys.exc_info())
+        for a in controller.arduino_list.values():
+            try:
+                bla = int(input(": "))
+                if bla == 1:
+                    self.stopAuto(a)
+                if bla == 0:
+                    self.goAuto(a)
+            except arduino.serial.SerialException:
+                print('The device on port ' + a.port + ' can not be found or can not be configured.')
                 print(sys.exc_info())
 
     # zoekt naar aangesloten arduino's aan de pc en update aan de hand daarvan de lijst met (actieve) arduino's
@@ -85,6 +118,8 @@ class Controller:
         for x in controller.connectedArduinoList:
             if x not in port_list:
                 disconnectedArduinoList.append(x)
+            if x in self.autoArduinoList:
+                disconnectedArduinoList.append(x)
         [controller.disconnectArduino(x) for x in disconnectedArduinoList] # verbreek dan de verbinding
 
         # kopieer port_list(zodat je er over kan iteraten en aanpassingen kan maken)
@@ -93,7 +128,8 @@ class Controller:
             if x in controller.connectedArduinoList:        # heeft x al een actieve verbinding
                 port_list.remove(x)                         # dan is alles goed
             elif x in controller.arduino_list:          # is deze anders al eerder aangesloten geweest?
-                controller.connectArduino(x)            # maak dan een verbinding
+                if x not in self.autoArduinoList:
+                    controller.connectArduino(x)            # maak dan een verbinding
                 port_list.remove(x)                     # en dan is alles goed
 
         for x in port_list:                         # voor de over gebleven poorten(dit zijn nieuw aangesloten arduino's)
@@ -117,4 +153,4 @@ while True:
     except:                     # foutje?
         print('oeps')           # zeg oeps
         print(sys.exc_info())   # stuur het foutje door naar de terminal zonder het programma stop te zetten
-    time.sleep(1)
+    time.sleep(0.25)

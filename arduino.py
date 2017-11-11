@@ -57,15 +57,32 @@ class Arduino:
     #    return value: tuple met daarin statuscode (OK of ERR) en evt. aanvullende info
     def request(self, command):
         self.ser.write((command + "\n").encode('ascii'))  # Let op! pyserial heeft geen writeline, zelf \n aan string toevoegen!
-        extra_info = None
+        extra_info = "empty"
         l = self.ser.readline().decode('ascii').strip()
         if l not in ["OK", "ERR"]:
             extra_info = l
             l = self.ser.readline().decode('ascii').strip()
             if l not in ["OK", "ERR"]:
-                l = None
+                l = "noreturn"
         return (l, extra_info)
 
+    def readInput(self):
+        input = ''
+        while input.__len__()<2:
+            input = self.ser.readline().decode('ascii').strip()
+        return input
+
+    def sendCommand(self, command):
+        response = self.request(command)
+        while response[0]!= 'OK':
+            print(response)
+            time.sleep(1)
+            response = self.request(command)
+        if(response[1]=="empty"):
+            time.sleep(0.05)
+            response = (response[0], self.ser.readline().decode('ascii').strip())
+        print("command: "+command+" completed, result: "+response[0]+", "+response[1])
+        return response
 
     # probeer een handshake te maken(= checken of er verbinding is)
     def start(self):
