@@ -55,7 +55,22 @@ class Controller:
             try:
                 a.update()
                 # a.request("info")
-                print(a.type)
+                # a.go_auto()
+
+                #print(a.get_temp_threshold())
+                #print(a.request("get_temp"))
+                #time.sleep(3)
+                #print(a.request("get_temp"))
+                print(a.request("get_distance"))
+                time.sleep(0.01)
+                print(a.request("get_dist_thres"))
+                #a.request("up")
+                #time.sleep(1)
+                #a.request("up")
+                #a.stop_auto()
+
+                #a.temperature_threshold_plus()
+                #print(a.type)
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
                 print(sys.exc_info())
@@ -102,4 +117,4 @@ while True:
     except:                     # foutje?
         print('oeps')           # zeg oeps
         print(sys.exc_info())   # stuur het foutje door naar de terminal zonder het programma stop te zetten
-    time.sleep(3)
+    time.sleep(1)

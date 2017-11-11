@@ -36,6 +36,9 @@ class Arduino:
         self.light_history = {}
         self.temperature_history = {}
 
+        self.automodus = False
+
+
     # initieer seriele connectie, baud rate 19200
     def ser_init(self):
         self.ser = serial.Serial(self.port, 19200, timeout=1)
@@ -62,6 +65,7 @@ class Arduino:
             if l not in ["OK", "ERR"]:
                 l = None
         return (l, extra_info)
+
 
     # probeer een handshake te maken(= checken of er verbinding is)
     def start(self):
@@ -135,6 +139,17 @@ class Arduino:
 
     def distance_threshold_min(self):
         self.request("dist_thres_min")
+
+    def go_auto(self):
+        #jemoeder_________________________________________________________________________________________________
+        # jemoeder_________________________________________________________________________________________________
+        # jemoeder_________________________________________________________________________________________________
+        # jemoeder_________________________________________________________________________________________________
+        print(self.request("go_auto"))
+    def stop_auto(self):
+        print(self.request("stop"))
+
+
 
 
 
