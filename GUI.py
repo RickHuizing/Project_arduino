@@ -19,16 +19,18 @@ class Besturing(Frame):
         self.statistiekenKnop = Button(master, text="statistieken", fg="black", command=Frame.quit)
         self.statistiekenKnop.grid(row=0, column=2, columnspan=1)
         self.statistiekenKnop.config(width=35, height=2)
-
+        #functie voor het doorgeven van parameters
         def wrapper2(func, args):  # without star
             return func(*args)
+        #lijstje maken met aangesloten arduino poorten
         lijst = list(arduinoList.keys())
         if len(lijst)==0:
             lijst[0]="noArduino"
+        #variabel met de actieve arduino(wordt aangepast door de OtionMenu(dropdown
         active_arduino = StringVar(master)
         active_arduino.set(lijst[0])  # default value
 
-        arglist = [master, active_arduino, lijst]
+        arglist = [master, active_arduino, lijst] #lijstje met parameters
         self.selecteerSchermKnop =wrapper2(OptionMenu, arglist)
         self.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
         self.selecteerSchermKnop.config(width=15, height=2, )
@@ -52,6 +54,7 @@ class Besturing(Frame):
         self.schermOmlaagKnop.grid(row=3, column=2, columnspan=1)
         self.schermOmlaagKnop.config(width=15, height=2)
 
+def selectSchermknop():
 
 class instellingen(Frame):
     def __init__(self, master):
@@ -106,11 +109,3 @@ class statistieken(Frame):
         self.schermKnop = Button(master, text="statistieken", fg="black", command=Frame.quit)
         self.schermKnop.grid(row=0, column=0, columnspan=3)
         self.schermKnop.config(width=5, height=2)
-
-'''''
-root = Tk()
-root.geometry('550x400+200+200')
-
-besturing = Besturing(root, "bla")
-root.mainloop()
-'''
