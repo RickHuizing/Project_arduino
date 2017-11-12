@@ -1,6 +1,7 @@
 from tkinter import *
+from controller import *
 class Besturing(Frame):
-    def __init__(self, master):
+    def __init__(self, master, controller, arduinoList):
 
         #setup the mainframe
         Frame.__init__(self, master)
@@ -10,9 +11,8 @@ class Besturing(Frame):
         for x in range(20):
             self.rowconfigure(x, weight=1)
 
-
-
-        self.besturingKnop = Button(master, text="besturing", fg="black", command=Frame.quit)
+        self.controller = controller
+        self.besturingKnop = Button(master, text="besturing", fg="black", command=self.quit)
         self.besturingKnop.grid(row=0, column=0, columnspan=2)
         self.besturingKnop.config(width=35, height=2)
 
@@ -20,9 +20,16 @@ class Besturing(Frame):
         self.statistiekenKnop.grid(row=0, column=2, columnspan=1)
         self.statistiekenKnop.config(width=35, height=2)
 
-        variable = StringVar(master)
-        variable.set("one")  # default value
-        self.selecteerSchermKnop =OptionMenu(master,variable, "one", "two", "three")# Menubutton(master, text="selecteerScherm", fg="black")
+        def wrapper2(func, args):  # without star
+            return func(*args)
+        lijst = list(arduinoList.keys())
+        if len(lijst)==0:
+            lijst[0]="noArduino"
+        active_arduino = StringVar(master)
+        active_arduino.set(lijst[0])  # default value
+
+        arglist = [master, active_arduino, lijst]
+        self.selecteerSchermKnop =wrapper2(OptionMenu, arglist)
         self.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
         self.selecteerSchermKnop.config(width=15, height=2, )
 
@@ -30,9 +37,12 @@ class Besturing(Frame):
         self.instellingenKnop.grid(row=1, column=1, columnspan=1)
         self.instellingenKnop.config(width=15, height=2)
 
-        self.schermOmhoogKnop = Button(master, text="omhoog", fg="black", command=Frame.quit)
+        def schermOmhoog():
+            controller.schermOmhoog(active_arduino.get())
+        self.schermOmhoogKnop = Button(master, text="omhoog", fg="black", command=schermOmhoog)
         self.schermOmhoogKnop.grid(row=1, column=2, columnspan=1)
         self.schermOmhoogKnop.config(width=15, height=2)
+
 
         self.automatischKnop = Checkbutton(master, text="automatisch")
         self.automatischKnop.grid(row=2, column=2, columnspan=1)
@@ -97,10 +107,10 @@ class statistieken(Frame):
         self.schermKnop.grid(row=0, column=0, columnspan=3)
         self.schermKnop.config(width=5, height=2)
 
-
+'''''
 root = Tk()
 root.geometry('550x400+200+200')
 
-besturing = Besturing(root)
+besturing = Besturing(root, "bla")
 root.mainloop()
-
+'''

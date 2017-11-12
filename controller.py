@@ -51,6 +51,7 @@ class Controller:
         print(luik.request('go_auto'))
         luik.ser_close()
         self.autoArduinoList[luik.port] = luik
+
     def stopAuto(self, luik):
         del self.autoArduinoList[luik.port]
         luik.ser_init()
@@ -61,15 +62,14 @@ class Controller:
                 break
                 '''
 
-
     # general update functie
     # TODO: is niet erg netjes en kan dus waarschijnlijk vervangen worden
     def update(self):
         # update the list of active arduino's
-        controller.updateArduinoList()
+        self.updateArduinoList()
         # update arduino's and detect ones that are disconnected
 
-        for a in controller.connectedArduinoList.values():
+        for a in self.connectedArduinoList.values():
             try:
                 b=a
                 #a.update()
@@ -77,63 +77,40 @@ class Controller:
                 #a.sendCommand("get_distance")
                 #a.sendCommand("get_dist_thres")
                 #a.sendCommand("get_temp")
-                a.sendCommand("get_temp_thres")
+                #a.sendCommand("get_temp_thres")
                 #a.sendCommand("up")
-
-                print(a.ser.readline().decode('ascii').strip())
-                print(a.ser.readline().decode('ascii').strip())
-                #time.sleep(1.25)
-                #a.sendCommand("down")
-                #a.sendCommand(str(input(": ")))
-                print(a.ser.readline().decode('ascii').strip())
-                print(a.ser.readline().decode('ascii').strip())
-                a.sendCommand("get_temp")
-                bla = int(input(": "))
-                if bla==1:
-                    self.stopAuto(a)
-                if bla ==0:
-                    self.goAuto(a)
+                #a.sendCommand("get_distance")
 
             except arduino.serial.SerialException:
                 print('The device on port ' +a.port+' can not be found or can not be configured.')
-                print(sys.exc_info())
-        for a in controller.arduino_list.values():
-            try:
-                bla = int(input(": "))
-                if bla == 1:
-                    self.stopAuto(a)
-                if bla == 0:
-                    self.goAuto(a)
-            except arduino.serial.SerialException:
-                print('The device on port ' + a.port + ' can not be found or can not be configured.')
                 print(sys.exc_info())
 
     # zoekt naar aangesloten arduino's aan de pc en update aan de hand daarvan de lijst met (actieve) arduino's
     def updateArduinoList(self):
         # fetch een lijst met aangesloten arduino's
-        port_list = controller.findarduino()
+        port_list = self.findarduino()
 
         disconnectedArduinoList = []
         # zijn er arduino's in de lijst met aangesloten arduino's die niet zijn aangesloten?
-        for x in controller.connectedArduinoList:
+        for x in self.connectedArduinoList:
             if x not in port_list:
                 disconnectedArduinoList.append(x)
             if x in self.autoArduinoList:
                 disconnectedArduinoList.append(x)
-        [controller.disconnectArduino(x) for x in disconnectedArduinoList] # verbreek dan de verbinding
+        [self.disconnectArduino(x) for x in disconnectedArduinoList] # verbreek dan de verbinding
 
         # kopieer port_list(zodat je er over kan iteraten en aanpassingen kan maken)
         iterate_port_list = port_list.copy()
         for x in iterate_port_list:                     # x='comport'string(vb: "COM10")
-            if x in controller.connectedArduinoList:        # heeft x al een actieve verbinding
+            if x in self.connectedArduinoList:        # heeft x al een actieve verbinding
                 port_list.remove(x)                         # dan is alles goed
-            elif x in controller.arduino_list:          # is deze anders al eerder aangesloten geweest?
+            elif x in self.arduino_list:          # is deze anders al eerder aangesloten geweest?
                 if x not in self.autoArduinoList:
-                    controller.connectArduino(x)            # maak dan een verbinding
+                    self.connectArduino(x)            # maak dan een verbinding
                 port_list.remove(x)                     # en dan is alles goed
 
         for x in port_list:                         # voor de over gebleven poorten(dit zijn nieuw aangesloten arduino's)
-            controller.add_arduino(x)               # voeg ze toe
+            self.add_arduino(x)               # voeg ze toe
 
     # geef een lijst met 'comport' strings(vb: "COM10") van aangesloten arduino's
     def findarduino(self):
@@ -144,8 +121,20 @@ class Controller:
             if 'Arduino' in x.__str__():                    # comport met arduino?
                 port_list.append(x.__str__()[:5].strip())   # sla de eerste 5 tekens op("COM##" of "COM# ")
         return port_list
+    def getConnectedArduinolist(self):
+        self.updateArduinoList()
+        return self.connectedArduinoList
+
+    #comando's naar de arduino
+    def schermOmhoog(self, port):
+        if port in self.connectedArduinoList:
+            self.connectedArduinoList[port].sendCommand("up")
+    def schermOmlaag(self, port):
+        if port in self.connectedArduinoList:
+            self.connectedArduinoList[port].sendCommand("down")
 
 
+'''
 controller = Controller()
 while True:
     try:                        #probeer dit
@@ -154,3 +143,4 @@ while True:
         print('oeps')           # zeg oeps
         print(sys.exc_info())   # stuur het foutje door naar de terminal zonder het programma stop te zetten
     time.sleep(0.25)
+'''
