@@ -115,17 +115,35 @@ class Instellingen(Frame):
 
         getSelectScherm(self, self.arduinoList)
 
-        self.OkKnop = Button(self, text="ok", fg="black", command=Frame.quit)
-        self.OkKnop.grid(row=1, column=1, columnspan=3)
-        self.OkKnop.config(width=15, height=2)
+        def on_button():
+            print(self.temperatuurInvul.get())
+            print(self.hoogteInvul.get())
+            print(self.lichtInvul.get())
 
-        self.annuleerKnop = Button(self, text="annuleer", fg="black", command=master.updateView0)
-        self.annuleerKnop.grid(row=2, column=1, columnspan=3)
-        self.annuleerKnop.config(width=15, height=2)
 
         self.temperatuurInvul = Entry(self, text="vul temp", fg="black")
         self.temperatuurInvul.grid(row=3, column=1, columnspan=3)
         self.temperatuurInvul.config(width=15)
+
+        self.enterKnop = Button(self, text="enter", fg="black", command=on_button)
+        self.enterKnop.grid(row=6, column=1, columnspan=3)
+        self.enterKnop.config(width=15, height=2)
+
+        self.hoogteInvul = Entry(self, text="vul hoogte", fg="black")
+        self.hoogteInvul.grid(row=4, column=1, columnspan=3)
+        self.hoogteInvul.config(width=15)
+
+        self.lichtInvul = Entry(self, text="vul licht", fg="black")
+        self.lichtInvul.grid(row=5, column=1, columnspan=3)
+        self.lichtInvul.config(width=15)
+
+        self.enterKnop = Button(self, text="Okto", fg="black", command=on_button)
+        self.enterKnop.grid(row=6, column=1, columnspan=3)
+        self.enterKnop.config(width=15, height=2)
+
+        self.annuleerKnop = Button(self, text="annuleer", fg="black", command=master.updateView0)
+        self.annuleerKnop.grid(row=6, column=3, columnspan=3)
+        self.annuleerKnop.config(width=15, height=2)
 
 class Statistieken(Frame):
     def __init__(self, master):
