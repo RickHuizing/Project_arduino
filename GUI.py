@@ -54,10 +54,10 @@ def getSelectScherm(master, arduinoList):
         lijst = ["noArduino"]
 
     # variabel met de actieve arduino(wordt aangepast door de OtionMenu(dropdown
-    active_arduino = StringVar(master)
-    active_arduino.set(lijst[0])  # default value
+    master.master.active_arduino = StringVar(master)
+    master.master.active_arduino.set(lijst[0])  # default value
 
-    arglist = [master, active_arduino, lijst]  # lijstje met parameters
+    arglist = [master, master.master.active_arduino, lijst]  # lijstje met parameters
     master.selecteerSchermKnop = wrapper2(OptionMenu, arglist)
     master.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
     master.selecteerSchermKnop.config(width=15, height=2, )
@@ -72,8 +72,7 @@ class Besturing(Frame):
         Frame.__init__(self, master)
         self.master = master
         self.arduinoList = controller.getConnectedArduinolist()
-        #self.content = Frame(master)
-        #self.content.grid(row=0, column=0, columnspan=2)
+        active_arduino = None
         self.controller = controller
 
         getNavigation(self) # get besturing
@@ -85,10 +84,8 @@ class Besturing(Frame):
         getInstellingen(self.pane)                    # 'instellingen' knop
         self.pane.grid(row=1, column=0, columnspan=2, rowspan=1)
 
-
-
         def schermOmhoog():
-            controller.schermOmhoog(active_arduino.get())
+            self.controller.schermOmhoog(self.active_arduino.get())
         self.schermOmhoogKnop = Button(self, text="omhoog", fg="black", command=schermOmhoog)
         self.schermOmhoogKnop.grid(row=1, column=2, columnspan=1)
         self.schermOmhoogKnop.config(width=15, height=2)
