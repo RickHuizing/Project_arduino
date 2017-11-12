@@ -11,6 +11,7 @@ class Main():
         #self.base.geometry('550x400+200+200')
         print("hai")
         self.root = MainView( self.controller)
+        self.root.config(background='black')
         self.root.mainloop()
 
 

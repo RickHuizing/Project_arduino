@@ -28,6 +28,7 @@ class MainView(Tk):
 
     def createScreen(self):
         self.view.grid(row=0, column=0)  # besturing toevoegen aan grid
+        self.view.config(background="grey")
         self.update()
 
 # functie voor het doorgeven van parameters
@@ -35,6 +36,7 @@ def wrapper1(func, args): #arguments niet in list
     return(func(args))
 def wrapper2(func, args):  # args in list
     return func(*args)
+
 # de 2 hoofdbesturingsknoppen
 def getNavigation(master):
     master.besturingKnop = Button(master, text="besturing", fg="black", command=master.master.updateView0)
@@ -44,20 +46,26 @@ def getNavigation(master):
     master.statistiekenKnop = Button(master, text="statistieken", fg="black", command=master.master.updateView2)
     master.statistiekenKnop.grid(row=0, column=2, columnspan=1)
     master.statistiekenKnop.config(width=35, height=2)
-def getSelectScherm(master):
+
+def getSelectScherm(master, arduinoList):
     # lijstje maken met aangesloten arduino poorten
-    lijst = list(master.arduinoList.keys())
+    lijst = list(arduinoList.keys())
     if len(lijst) == 0:
         lijst = ["noArduino"]
 
     # variabel met de actieve arduino(wordt aangepast door de OtionMenu(dropdown
     active_arduino = StringVar(master)
     active_arduino.set(lijst[0])  # default value
-    print("hoi2")
+
     arglist = [master, active_arduino, lijst]  # lijstje met parameters
     master.selecteerSchermKnop = wrapper2(OptionMenu, arglist)
     master.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
     master.selecteerSchermKnop.config(width=15, height=2, )
+
+def getInstellingen(master):
+    master.instellingenKnop = Button(master, text="instellingen", fg="black", command=master.master.master.updateView1)
+    master.instellingenKnop.grid(row=1, column=1, columnspan=1)
+    master.instellingenKnop.config(width=15, height=2)
 
 class Besturing(Frame):
     def __init__(self, master, controller):
@@ -70,11 +78,14 @@ class Besturing(Frame):
 
         getNavigation(self) # get besturing
 
-        getSelectScherm(self) #selecteer scherm knop
+        self.pane = Frame(self)
+        self.pane.config(background='white')
 
-        self.instellingenKnop = Button(self, text="instellingen", fg="black", command=self.master.updateView1)
-        self.instellingenKnop.grid(row=1, column=1, columnspan=1)
-        self.instellingenKnop.config(width=15, height=2)
+        getSelectScherm(self.pane, self.arduinoList) # 'selecteer scherm' knop
+        getInstellingen(self.pane)                    # 'instellingen' knop
+        self.pane.grid(row=1, column=0, columnspan=2, rowspan=1)
+
+
 
         def schermOmhoog():
             controller.schermOmhoog(active_arduino.get())
