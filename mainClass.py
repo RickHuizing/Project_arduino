@@ -6,11 +6,15 @@ from tkinter import *
 class Main():
     def __init__(self):
         self.controller = controller.Controller()
-        root = Tk()
-        root.geometry('550x400+200+200')
+        self.controller.updateArduinoList()
+        #self.base = Tk()
+        #self.base.geometry('550x400+200+200')
+        print("hai")
+        self.root = MainView( self.controller)
+        #self.root.grid(row=0, column=0)
 
-        self.besturing = Besturing(root, self.controller, self.controller.getConnectedArduinolist())
-        root.mainloop()
+        print("hhoi")
+        self.root.mainloop()
 
 main = Main()
 
