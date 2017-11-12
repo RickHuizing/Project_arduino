@@ -38,34 +38,34 @@ def wrapper2(func, args):  # args in list
     return func(*args)
 
 # de 2 hoofdbesturingsknoppen
-def getNavigation(master):
-    master.besturingKnop = Button(master, text="besturing", fg="black", command=master.master.updateView0)
-    master.besturingKnop.grid(row=0, column=0, columnspan=2)
-    master.besturingKnop.config(width=35, height=2)
+def getNavigation(frame):
+    frame.besturingKnop = Button(frame, text="besturing", fg="black", command=frame.master.updateView0)
+    frame.besturingKnop.grid(row=0, column=0, columnspan=2)
+    frame.besturingKnop.config(width=35, height=2)
 
-    master.statistiekenKnop = Button(master, text="statistieken", fg="black", command=master.master.updateView2)
-    master.statistiekenKnop.grid(row=0, column=2, columnspan=1)
-    master.statistiekenKnop.config(width=35, height=2)
+    frame.statistiekenKnop = Button(frame, text="statistieken", fg="black", command=frame.master.updateView2)
+    frame.statistiekenKnop.grid(row=0, column=2, columnspan=1)
+    frame.statistiekenKnop.config(width=35, height=2)
 
-def getSelectScherm(master, arduinoList):
+def getSelectScherm(frame, arduinoList):
     # lijstje maken met aangesloten arduino poorten
     lijst = list(arduinoList.keys())
     if len(lijst) == 0:
         lijst = ["noArduino"]
 
     # variabel met de actieve arduino(wordt aangepast door de OtionMenu(dropdown
-    master.master.active_arduino = StringVar(master)
-    master.master.active_arduino.set(lijst[0])  # default value
+    frame.master.active_arduino = StringVar(frame)
+    frame.master.active_arduino.set(lijst[0])  # default value
 
-    arglist = [master, master.master.active_arduino, lijst]  # lijstje met parameters
-    master.selecteerSchermKnop = wrapper2(OptionMenu, arglist)
-    master.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
-    master.selecteerSchermKnop.config(width=15, height=2, )
+    arglist = [frame, frame.master.active_arduino, lijst]  # lijstje met parameters
+    frame.selecteerSchermKnop = wrapper2(OptionMenu, arglist)
+    frame.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
+    frame.selecteerSchermKnop.config(width=15, height=2, )
 
-def getInstellingen(master):
-    master.instellingenKnop = Button(master, text="instellingen", fg="black", command=master.master.master.updateView1)
-    master.instellingenKnop.grid(row=1, column=1, columnspan=1)
-    master.instellingenKnop.config(width=15, height=2)
+def getInstellingen(frame):
+    frame.instellingenKnop = Button(frame, text="instellingen", fg="black", command=frame.master.master.updateView1)
+    frame.instellingenKnop.grid(row=1, column=1, columnspan=1)
+    frame.instellingenKnop.config(width=15, height=2)
 
 class Besturing(Frame):
     def __init__(self, master, controller):
@@ -75,7 +75,7 @@ class Besturing(Frame):
         active_arduino = None
         self.controller = controller
 
-        getNavigation(self) # get besturing
+        getNavigation(self) # get navigatiebalk
 
         self.pane = Frame(self)
         self.pane.config(background='white')
