@@ -14,23 +14,50 @@ class MainView(Tk):
         self.updateView(0)
     def updateView1(self):
         self.updateView(1)
+    def updateView2(self):
+        self.updateView(2)
     def updateView(self, view):
         self.view.destroy()
         if view == 0: #besturing
             self.view = Besturing(self, self.controller)
         if view == 1: #instellingen
             self.view = Instellingen(self)
+        if view == 2: #statistiek
+            self.view = Statistieken(self)
         self.createScreen()
 
     def createScreen(self):
         self.view.grid(row=0, column=0)  # besturing toevoegen aan grid
-        pass
+        self.update()
 
 # functie voor het doorgeven van parameters
 def wrapper1(func, args): #arguments niet in list
     return(func(args))
 def wrapper2(func, args):  # args in list
     return func(*args)
+# de 2 hoofdbesturingsknoppen
+def getNavigation(master):
+    master.besturingKnop = Button(master, text="besturing", fg="black", command=master.master.updateView0)
+    master.besturingKnop.grid(row=0, column=0, columnspan=2)
+    master.besturingKnop.config(width=35, height=2)
+
+    master.statistiekenKnop = Button(master, text="statistieken", fg="black", command=master.master.updateView2)
+    master.statistiekenKnop.grid(row=0, column=2, columnspan=1)
+    master.statistiekenKnop.config(width=35, height=2)
+def getSelectScherm(master):
+    # lijstje maken met aangesloten arduino poorten
+    lijst = list(master.arduinoList.keys())
+    if len(lijst) == 0:
+        lijst = ["noArduino"]
+
+    # variabel met de actieve arduino(wordt aangepast door de OtionMenu(dropdown
+    active_arduino = StringVar(master)
+    active_arduino.set(lijst[0])  # default value
+    print("hoi2")
+    arglist = [master, active_arduino, lijst]  # lijstje met parameters
+    master.selecteerSchermKnop = wrapper2(OptionMenu, arglist)
+    master.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
+    master.selecteerSchermKnop.config(width=15, height=2, )
 
 class Besturing(Frame):
     def __init__(self, master, controller):
@@ -41,30 +68,11 @@ class Besturing(Frame):
         #self.content.grid(row=0, column=0, columnspan=2)
         self.controller = controller
 
-        self.besturingKnop = Button(self, text="besturing", fg="black", command=self.master.updateView0)
-        self.besturingKnop.grid(row=0, column=0, columnspan=2)
-        self.besturingKnop.config(width=35, height=2)
-        self.statistiekenKnop = Button(self, text="statistieken", fg="black", command=Frame.quit)
-        self.statistiekenKnop.grid(row=0, column=2, columnspan=1)
-        self.statistiekenKnop.config(width=35, height=2)
+        getNavigation(self) # get besturing
 
+        getSelectScherm(self) #selecteer scherm knop
 
-
-        # lijstje maken met aangesloten arduino poorten
-        lijst = list(self.arduinoList.keys())
-        if len(lijst) == 0:
-            lijst = ["noArduino"]
-
-        # variabel met de actieve arduino(wordt aangepast door de OtionMenu(dropdown
-        active_arduino = StringVar(self)
-        active_arduino.set(lijst[0])  # default value
-        print("hoi2")
-        arglist = [self, active_arduino, lijst]  # lijstje met parameters
-        self.selecteerSchermKnop = wrapper2(OptionMenu, arglist)
-        self.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
-        self.selecteerSchermKnop.config(width=15, height=2, )
-
-        self.instellingenKnop = Button(self, text="instellingen", fg="black", command=self.master.updateView0)
+        self.instellingenKnop = Button(self, text="instellingen", fg="black", command=self.master.updateView1)
         self.instellingenKnop.grid(row=1, column=1, columnspan=1)
         self.instellingenKnop.config(width=15, height=2)
 
@@ -88,26 +96,14 @@ class Besturing(Frame):
 
 class Instellingen(Frame):
     def __init__(self, master):
-
         #setup the mainframe
         Frame.__init__(self, master)
 
-        for x in range (20):
-            self.columnconfigure(x, weight=1)
-        for x in range(20):
-            self.rowconfigure(x, weight=1)
+        self.arduinoList = master.controller.getConnectedArduinolist()
 
-        self.selecteerSchermKnop = Menubutton(self, text="selecteerScherm", fg="black")
-        self.selecteerSchermKnop.grid(row=0, column=0, columnspan=2)
-        self.selecteerSchermKnop.config(width=15, height=2)
+        getNavigation(self)  # get besturing
 
-        self.statistiekenKnop = Button(self, text="statistieken", fg="black", command=Frame.quit)
-        self.statistiekenKnop.grid(row=0, column=3, columnspan=1)
-        self.statistiekenKnop.config(width=15, height=2)
-
-        self.instellingenKnop = Button(self, text="instellingen", fg="black", command=Frame.quit)
-        self.instellingenKnop.grid(row=2, column=1, columnspan=3)
-        self.instellingenKnop.config(width=15, height=2)
+        getSelectScherm(self)
 
         self.OkKnop = Button(self, text="omhoog", fg="black", command=Frame.quit)
         self.OkKnop.grid(row=1, column=1, columnspan=3)
@@ -118,21 +114,10 @@ class Instellingen(Frame):
         self.annuleerKnop.config(width=15, height=2)
 
 
-class statistieken(Frame):
+class Statistieken(Frame):
     def __init__(self, master):
-
         #setup the mainframe
         Frame.__init__(self, master)
 
-        for x in range (400):
-            self.columnconfigure(x, weight=1)
-        for x in range(400):
-            self.rowconfigure(x, weight=1)
 
-        self.besturingKnop = Button(master, text="statistieken", fg="black", command=Frame.quit)
-        self.besturingKnop.grid(row=0, column=0, columnspan=3)
-        self.besturingKnop.config(width=5, height=2)
-
-        self.schermKnop = Button(master, text="statistieken", fg="black", command=Frame.quit)
-        self.schermKnop.grid(row=0, column=0, columnspan=3)
-        self.schermKnop.config(width=5, height=2)
+        getNavigation(self)  # get besturing
