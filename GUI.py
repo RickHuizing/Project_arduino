@@ -3,12 +3,14 @@ from controller import *
 
 class MainView(Tk):
     def __init__(self, controller):
-        Tk.__init__(self)
-        self.controller = controller
-        self.besturing = Besturing(self, self.controller)
-        self.besturing.grid(row=0, column=0)
-        #self.besturing.getContent().grid(row=0, column=0, columnspan=1)
-        #self.besturing.getContent().mainloop()
+        Tk.__init__(self) #dit is het main scherm
+        self.controller = controller # controller
+        self.besturing = Besturing(self, self.controller) # de besturings view
+        self.besturing.grid(row=0, column=0) # besturing toevoegen aan grid
+
+        self.instellingen = instellingen(self)
+        self.instellingen.grid(row=1)
+
 
 class Besturing(Frame):
     def __init__(self, master, controller):
@@ -77,29 +79,26 @@ class instellingen(Frame):
         for x in range(20):
             self.rowconfigure(x, weight=1)
 
-        self.selecteerSchermKnop = Menubutton(master, text="selecteerScherm", fg="black")
-        self.selecteerSchermKnop.grid(row=0, column=0, columnspan=3)
-        self.selecteerSchermKnop.config(width=5, height=2)
+        self.selecteerSchermKnop = Menubutton(self, text="selecteerScherm", fg="black")
+        self.selecteerSchermKnop.grid(row=0, column=0, columnspan=2)
+        self.selecteerSchermKnop.config(width=15, height=2)
 
-        self.statistiekenKnop = Button(master, text="statistieken", fg="black", command=Frame.quit)
-        self.statistiekenKnop.grid(row=0, column=0, columnspan=3)
-        self.statistiekenKnop.config(width=5, height=2)
+        self.statistiekenKnop = Button(self, text="statistieken", fg="black", command=Frame.quit)
+        self.statistiekenKnop.grid(row=0, column=3, columnspan=1)
+        self.statistiekenKnop.config(width=15, height=2)
 
-        self.instellingenKnop = Button(master, text="instellingen", fg="black", command=Frame.quit)
-        self.instellingenKnop.grid(row=2, column=2, columnspan=3)
-        self.instellingenKnop.config(width=5, height=2)
+        self.instellingenKnop = Button(self, text="instellingen", fg="black", command=Frame.quit)
+        self.instellingenKnop.grid(row=2, column=1, columnspan=3)
+        self.instellingenKnop.config(width=15, height=2)
 
-        self.OkKnop = Button(master, text="omhoog", fg="black", command=Frame.quit)
+        self.OkKnop = Button(self, text="omhoog", fg="black", command=Frame.quit)
         self.OkKnop.grid(row=1, column=1, columnspan=3)
-        self.OkKnop.config(width=5, height=2)
+        self.OkKnop.config(width=15, height=2)
 
-        self.annuleerKnop = Button(master, text="omlaag", fg="black", command=Frame.quit)
-        self.annuleerKnop.grid(row=2, column=3, columnspan=3)
-        self.annuleerKnop.config(width=5, height=2)
+        self.annuleerKnop = Button(self, text="omlaag", fg="black", command=Frame.quit)
+        self.annuleerKnop.grid(row=2, column=1, columnspan=3)
+        self.annuleerKnop.config(width=15, height=2)
 
-        self.annuleerKnop = Entry(master, text="omlaag", fg="black", command=Frame.quit)
-        self.annuleerKnop.grid(row=2, column=3, columnspan=3)
-        self.annuleerKnop.config(width=5, height=2)
 
 class statistieken(Frame):
     def __init__(self, master):
