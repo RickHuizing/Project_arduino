@@ -5,11 +5,15 @@ class MainView(Tk):
     def __init__(self, controller):
         Tk.__init__(self) #dit is het main scherm
         self.controller = controller # controller
-
+        self.view = Frame(self)
         self.view = Besturing(self, self.controller) # de besturings view
         self.view.grid(row=0, column=0) # besturing toevoegen aan grid
         self.updateView(0)
 
+    def updateView0(self):
+        self.updateView(0)
+    def updateView1(self):
+        self.updateView(1)
     def updateView(self, view):
         self.view.destroy()
         if view == 0: #besturing
@@ -22,26 +26,29 @@ class MainView(Tk):
         self.view.grid(row=0, column=0)  # besturing toevoegen aan grid
         pass
 
+# functie voor het doorgeven van parameters
+def wrapper1(func, args): #arguments niet in list
+    return(func(args))
+def wrapper2(func, args):  # args in list
+    return func(*args)
 
 class Besturing(Frame):
     def __init__(self, master, controller):
         Frame.__init__(self, master)
+        self.master = master
         self.arduinoList = controller.getConnectedArduinolist()
         #self.content = Frame(master)
         #self.content.grid(row=0, column=0, columnspan=2)
         self.controller = controller
 
-        self.besturingKnop = Button(self, text="besturing", fg="black", command=Frame.quit)
+        self.besturingKnop = Button(self, text="besturing", fg="black", command=self.master.updateView0)
         self.besturingKnop.grid(row=0, column=0, columnspan=2)
         self.besturingKnop.config(width=35, height=2)
-
         self.statistiekenKnop = Button(self, text="statistieken", fg="black", command=Frame.quit)
         self.statistiekenKnop.grid(row=0, column=2, columnspan=1)
         self.statistiekenKnop.config(width=35, height=2)
 
-        # functie voor het doorgeven van parameters
-        def wrapper2(func, args):  # without star
-            return func(*args)
+
 
         # lijstje maken met aangesloten arduino poorten
         lijst = list(self.arduinoList.keys())
@@ -57,7 +64,7 @@ class Besturing(Frame):
         self.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
         self.selecteerSchermKnop.config(width=15, height=2, )
 
-        self.instellingenKnop = Button(self, text="instellingen", fg="black", command=Frame.quit)
+        self.instellingenKnop = Button(self, text="instellingen", fg="black", command=self.master.updateView0)
         self.instellingenKnop.grid(row=1, column=1, columnspan=1)
         self.instellingenKnop.config(width=15, height=2)
 
