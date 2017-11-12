@@ -111,13 +111,13 @@ class Instellingen(Frame):
 
         getNavigation(self)  # get besturing
 
-        getSelectScherm(self)
+        getSelectScherm(self, self.arduinoList)
 
-        self.OkKnop = Button(self, text="omhoog", fg="black", command=Frame.quit)
+        self.OkKnop = Button(self, text="ok", fg="black", command=Frame.quit)
         self.OkKnop.grid(row=1, column=1, columnspan=3)
         self.OkKnop.config(width=15, height=2)
 
-        self.annuleerKnop = Button(self, text="omlaag", fg="black", command=Frame.quit)
+        self.annuleerKnop = Button(self, text="annuleer", fg="black", command=Frame.quit)
         self.annuleerKnop.grid(row=2, column=1, columnspan=3)
         self.annuleerKnop.config(width=15, height=2)
 
