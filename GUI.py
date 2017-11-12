@@ -5,11 +5,22 @@ class MainView(Tk):
     def __init__(self, controller):
         Tk.__init__(self) #dit is het main scherm
         self.controller = controller # controller
-        self.besturing = Besturing(self, self.controller) # de besturings view
-        self.besturing.grid(row=0, column=0) # besturing toevoegen aan grid
 
-        self.instellingen = instellingen(self)
-        self.instellingen.grid(row=1)
+        self.view = Besturing(self, self.controller) # de besturings view
+        self.view.grid(row=0, column=0) # besturing toevoegen aan grid
+        self.updateView(0)
+
+    def updateView(self, view):
+        self.view.destroy()
+        if view == 0: #besturing
+            self.view = Besturing(self, self.controller)
+        if view == 1: #instellingen
+            self.view = Instellingen(self)
+        self.createScreen()
+
+    def createScreen(self):
+        self.view.grid(row=0, column=0)  # besturing toevoegen aan grid
+        pass
 
 
 class Besturing(Frame):
@@ -68,7 +79,7 @@ class Besturing(Frame):
     def getContent(self):
         return self.content
 
-class instellingen(Frame):
+class Instellingen(Frame):
     def __init__(self, master):
 
         #setup the mainframe
