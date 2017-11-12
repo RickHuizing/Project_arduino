@@ -22,7 +22,7 @@ class MainView(Tk):
             self.view = Besturing(self, self.controller)
         if view == 1: #instellingen
             self.view = Instellingen(self)
-        if view == 2: #statistiek
+        if view == 2: #statistieken
             self.view = Statistieken(self)
         self.createScreen()
 
@@ -63,8 +63,8 @@ def getSelectScherm(frame, arduinoList):
     frame.selecteerSchermKnop.config(width=15, height=2, )
 
 def getInstellingen(frame):
-    frame.instellingenKnop = Button(frame, text="instellingen", fg="black", command=frame.master.master.updateView1)
-    frame.instellingenKnop.grid(row=1, column=1, columnspan=1)
+    frame.instellingenKnop = Button(frame, text="instellingen", fg="black", command=frame.master.updateView1)
+    frame.instellingenKnop.grid(row=1, column=2, columnspan=1)
     frame.instellingenKnop.config(width=15, height=2)
 
 class Besturing(Frame):
@@ -81,22 +81,22 @@ class Besturing(Frame):
         self.pane.config(background='white')
 
         getSelectScherm(self.pane, self.arduinoList) # 'selecteer scherm' knop
-        getInstellingen(self.pane)                    # 'instellingen' knop
+        getInstellingen(self)                    # 'instellingen' knop
         self.pane.grid(row=1, column=0, columnspan=2, rowspan=1)
 
         def schermOmhoog():
             self.controller.schermOmhoog(self.active_arduino.get())
         self.schermOmhoogKnop = Button(self, text="omhoog", fg="black", command=schermOmhoog)
-        self.schermOmhoogKnop.grid(row=1, column=2, columnspan=1)
+        self.schermOmhoogKnop.grid(row=2, column=2, columnspan=1)
         self.schermOmhoogKnop.config(width=15, height=2)
 
 
         self.automatischKnop = Checkbutton(self, text="automatisch")
-        self.automatischKnop.grid(row=2, column=2, columnspan=1)
+        self.automatischKnop.grid(row=3, column=2, columnspan=1)
         self.automatischKnop.config(width=15, height=2)
 
         self.schermOmlaagKnop = Button(self, text="omlaag", fg="black", command=Frame.quit)
-        self.schermOmlaagKnop.grid(row=3, column=2, columnspan=1)
+        self.schermOmlaagKnop.grid(row=4, column=2, columnspan=1)
         self.schermOmlaagKnop.config(width=15, height=2)
 
     def getContent(self):
@@ -117,7 +117,7 @@ class Instellingen(Frame):
         self.OkKnop.grid(row=1, column=1, columnspan=3)
         self.OkKnop.config(width=15, height=2)
 
-        self.annuleerKnop = Button(self, text="annuleer", fg="black", command=Frame.quit)
+        self.annuleerKnop = Button(self, text="annuleer", fg="black", command=master.updateView0)
         self.annuleerKnop.grid(row=2, column=1, columnspan=3)
         self.annuleerKnop.config(width=15, height=2)
 
