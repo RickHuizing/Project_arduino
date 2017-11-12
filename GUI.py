@@ -121,6 +121,9 @@ class Instellingen(Frame):
         self.annuleerKnop.grid(row=2, column=1, columnspan=3)
         self.annuleerKnop.config(width=15, height=2)
 
+        self.temperatuurInvul = Entry(self, text="vul temp", fg="black")
+        self.temperatuurinvul.grid(row=3, column=1, columnspan=3)
+        self.temperatuurinvul.config(width=15, height=2)
 
 class Statistieken(Frame):
     def __init__(self, master):
