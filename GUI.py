@@ -86,6 +86,8 @@ class Besturing(Frame):
 
         def schermOmhoog():
             self.controller.schermOmhoog(self.active_arduino.get())
+        def schermOmlaag():
+            self.controller.schermOmlaag(self.active_arduino.get())
         self.schermOmhoogKnop = Button(self, text="omhoog", fg="black", command=schermOmhoog)
         self.schermOmhoogKnop.grid(row=2, column=2, columnspan=1)
         self.schermOmhoogKnop.config(width=15, height=2)
@@ -95,7 +97,7 @@ class Besturing(Frame):
         self.automatischKnop.grid(row=3, column=2, columnspan=1)
         self.automatischKnop.config(width=15, height=2)
 
-        self.schermOmlaagKnop = Button(self, text="omlaag", fg="black", command=Frame.quit)
+        self.schermOmlaagKnop = Button(self, text="omlaag", fg="black", command=schermOmlaag)
         self.schermOmlaagKnop.grid(row=4, column=2, columnspan=1)
         self.schermOmlaagKnop.config(width=15, height=2)
 
