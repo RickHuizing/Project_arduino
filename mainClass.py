@@ -16,7 +16,6 @@ class Main():
         self.root.after(200, self.root.doUpdate())
         self.root.mainloop()
 
-
 main = Main()
 
 

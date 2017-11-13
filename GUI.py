@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import _setit
 from controller import *
 import time
+import grafiek
 
 class MainView(Tk):
     def __init__(self, controller):
@@ -55,9 +56,14 @@ class MainView(Tk):
                     self.view.schermOmlaagKnop.config(state=NORMAL)
                     self.view.instellingenKnop.config(state=NORMAL)
                     self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto)
-                    self.view.automatischKnop.grid(row=6, column=2, columnspan=1)
-                    self.view.automatischKnop.config(width=15, height=1)
+                    self.view.automatischKnop.grid(row=3, column=2, columnspan=1)
+                    self.view.automatischKnop.config(width=15, height=2)
                 updateSelectScherm(self.view, self.controller.arduino_list)
+            if isinstance(self.view, Instellingen):
+                pass
+            if isinstance(self.view, Statistieken):
+                #self.view
+                pass
         self.after(100, self.doUpdate)
 
 # functie voor het doorgeven van parameters
@@ -203,7 +209,7 @@ class Besturing(Frame):
         self.hoogte = getDistance( self.pane)
 
         self.instellingenKnop = getInstellingen(self)                    # 'instellingen' knop
-        self.pane.grid(row=1, column=0, columnspan=2, rowspan=1, sticky=NW) #north west
+        self.pane.grid(row=1, column=0, columnspan=2, rowspan=6, sticky=NW) #north west
 
         def schermOmhoog():
             self.controller.schermOmhoog(self.active_arduino.get())
@@ -310,6 +316,19 @@ class Statistieken(Frame):
     def __init__(self, master):
         #setup the mainframe
         Frame.__init__(self, master)
-
-
+        self.listje ={}
         getNavigation(self)  # get besturing
+        self.setPlot('COM10', self.master.controller)
+        self.grafiek = None
+        if(len(self.listje)>0):
+           self.grafiek=grafiek.Plot(self, self.listje)
+
+    def setPlot(self, arduino, controller):
+        lijst = self.getTempHistory(arduino, controller)
+        if not len(lijst)<1:
+            self.grafiek = grafiek.Plot(self, lijst)
+
+    def getTempHistory(self,arduino,controller):
+        self.listje = controller.arduino_list[arduino].temperature_history
+        print(self.listje)
+        return self.listje

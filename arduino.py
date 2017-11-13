@@ -107,6 +107,7 @@ class Arduino:
                     print("Handshake failed")
 
     def update(self):
+        print(self.request("get_type"))
         if self.type != 0:
             if self.type == 1:
                 self.update_light()
@@ -115,6 +116,7 @@ class Arduino:
             self.update_distance()
         else:
             self.set_type()
+
     # haal de data van de sonar sensor op en sla het op met de huidige uur:minuut
     def update_distance(self):
         key = time.strftime('%X')[:8]
@@ -133,8 +135,18 @@ class Arduino:
     def update_temperature(self):
         key = time.strftime('%X')[:8]
         r = self.request("get_temp")
+        print(r)
         if r[0] == 'OK':
-            self.temperature_history[key] = r[1]
+            if len(self.temperature_history)>15:
+                tempHistcopy = self.temperature_history.copy()
+                i=1
+                for x in tempHistcopy:
+                    if i==1:
+                        i=0
+                        pass
+                    self.temperature_history[x] = tempHistcopy[x]
+            self.temperature_history[key] = float(r[1])
+
 
     def get_light_threshold(self):
         lightThres = self.request("get_light_thres")
@@ -155,6 +167,7 @@ class Arduino:
                 times -= 1
     def get_temp_threshold(self):
         tempThres = self.request("get_temp_thres")
+        print(tempThres)
         return tempThres[1][:-2]
     def set_temp_thres(self, thres):
         oldThres=int(self.get_temp_threshold())
@@ -173,7 +186,6 @@ class Arduino:
 
     def get_distance_threshold(self):
         dist_thres = self.request("get_dist_thres")
-        print(dist_thres)
         return dist_thres[1][:-2]
     def set_distance_thres(self, thres):
         oldThres=int(self.get_distance_threshold())

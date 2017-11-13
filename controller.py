@@ -70,7 +70,10 @@ class Controller:
     def update(self):
         # update the list of active arduino's
         self.updateArduinoList()
-        # update arduino's and detect ones that are disconnected
+
+        for x in self.connectedArduinoList:
+            self.connectedArduinoList[x].update()
+
 
 
     # zoekt naar aangesloten arduino's aan de pc en update aan de hand daarvan de lijst met (actieve) arduino's
