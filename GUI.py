@@ -423,14 +423,26 @@ class Statistieken(Frame):
                 x.canvas.grid_forget
             self.plotList=[]
             for ardport in self.master.controller.connectedArduinoList:
-                self.createPlotsTemp(ardport, self.master.controller, len(self.plotList))
+                self.master.controller.connectedArduinoList[ardport].set_type()
+                if self.master.controller.connectedArduinoList[ardport].type !=1:
+                    self.createPlotsTemp(ardport, self.master.controller, len(self.plotList))
+                else:
+                    self.createPlotsLight(ardport, self.master.controller, len(self.plotList))
         except:
             self.master.updateView2()
 
 
     def createPlotsTemp(self, arduino, controller, number):
         plotframe = Frame(self)
-        plotframe.grid(column=0, row=1+number, columnspan=3)
+        print(number, "bla")
+        if number == 0:
+            plotframe.grid(column=0, row=1, columnspan=3)
+        if number == 1:
+            plotframe.grid(column=3, row=1, columnspan=3)
+        if number == 2:
+            plotframe.grid(column=3, row=1, columnspan=3)
+        if number == 3:
+            plotframe.grid(column=3, row=2, columnspan=3)
         label = Label(plotframe, text=arduino)
         label.grid(column=0, row=0)
         plot = self.setTempPlot(arduino, controller, plotframe)
@@ -438,9 +450,16 @@ class Statistieken(Frame):
         plot2 = self.setDistPlot(arduino, controller, plotframe)
         plot2.canvas.grid(column=1, row=1, columnspan=4)
 
-    def createPlotsLight(self, arduino, controller):
+    def createPlotsLight(self, arduino, controller, number):
         plotframe = Frame(self)
-        plotframe.grid(column=0, row=1, columnspan=3)
+        if number == 0:
+            plotframe.grid(column=0, row=1, columnspan=3)
+        if number == 1:
+            plotframe.grid(column=3, row=1, columnspan=3)
+        if number == 2:
+            plotframe.grid(column=3, row=1, columnspan=3)
+        if number == 3:
+            plotframe.grid(column=3, row=2, columnspan=3)
         label = Label(plotframe, text=arduino)
         label.grid(column=0, row=0)
         plot = self.setLightPlot(arduino, controller, plotframe)
@@ -463,9 +482,9 @@ class Statistieken(Frame):
 
     def setLightPlot(self, arduino, controller, master):
         lijst = self.getLightHistory(arduino, controller)
-        print(len(lijst))
+        print(lijst)
         if not len(lijst)<1:
-            plot = grafiek.Plot(master, lijst)
+            plot = grafiek.Plot(master, lijst, light=1)
             self.plotList.append(plot)
             return plot
 

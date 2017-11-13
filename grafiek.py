@@ -2,11 +2,13 @@ from tkinter import *
 from random import randint
 import time
 class Plot():
-    def __init__(self, master, values, width=450, height=300, borderMarg=35, xAxSpacing=45, yAxisinterval=1, xAxisinterval=10, yAxSpacing = 25, YaxisSpots= 5):
+    def __init__(self, master, values, width=450, height=300, borderMarg=35, xAxSpacing=45, yAxisinterval=1, xAxisinterval=10, yAxSpacing = 25, YaxisSpots= 5, light=0):
         self.frameWidth = width
         self.frameHeight = yAxSpacing*YaxisSpots+2*borderMarg
 
         self.borderMarge = borderMarg
+        if light == 1:
+            self.borderMarge+=10
         self.xAxisSpacing = xAxSpacing
         self.yAxisSpacing = yAxSpacing
 

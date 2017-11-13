@@ -147,7 +147,7 @@ class Arduino:
                         self.light_history={}
                     else:
                         self.light_history[x] = tempHistcopy[x]
-                    self.light_history[key] = float(r[1])
+            self.light_history[key] = float(r[1])
 
 
     # haal de data van de thermometer op en sla het op met de huidige uur:minuut
