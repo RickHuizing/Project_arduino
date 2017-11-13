@@ -51,7 +51,7 @@ class MainView(Tk):
                     self.view.schermOmhoogKnop.config(state=DISABLED)
                     self.view.schermOmlaagKnop.config(state=DISABLED)
                     self.view.instellingenKnop.config(state=DISABLED)
-                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.stopAuto)
+                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.stopAuto, fg="white", bg="dim gray")
                     self.view.automatischKnop.grid(row=5, column=2, columnspan=1)
                     self.view.automatischKnop.config(width=20, height=2)
                     self.view.automatischKnop.config(state=DISABLED)
@@ -61,7 +61,7 @@ class MainView(Tk):
                     self.view.schermOmhoogKnop.config(state=NORMAL)
                     self.view.schermOmlaagKnop.config(state=NORMAL)
                     self.view.instellingenKnop.config(state=NORMAL)
-                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto)
+                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto, fg="white", bg="dim gray")
                     self.view.automatischKnop.grid(row=5, column=2, columnspan=1)
                     self.view.automatischKnop.config(width=20, height=2)
                 updateSelectScherm(self.view, self.controller.arduino_list)
@@ -264,22 +264,22 @@ class Besturing(Frame):
         def schermOmlaag():
             self.controller.schermOmlaag(self.active_arduino.get())
 
-        self.schermOmhoogKnop = Button(self, text="omhoog", fg="black", command=schermOmhoog)
+        self.schermOmhoogKnop = Button(self, text="omhoog", fg="white", bg="dim gray", command=schermOmhoog)
         self.schermOmhoogKnop.grid(row=4, column=2, columnspan=1)
         self.schermOmhoogKnop.config(width=20, height=2)
 
-        self.schermOmlaagKnop = Button(self, text="omlaag", fg="black", command=schermOmlaag)
+        self.schermOmlaagKnop = Button(self, text="omlaag", fg="white", bg="dim gray", command=schermOmlaag)
         self.schermOmlaagKnop.grid(row=6, column=2, columnspan=1)
         self.schermOmlaagKnop.config(width=20, height=2)
 
 
 
         if self.active_arduino.get() not in controller.autoArduinoList:
-            self.automatischKnop = Button(self, text="automatisch", command=self.goAuto)
+            self.automatischKnop = Button(self, text="automatisch", command=self.goAuto, fg="white", bg="dim gray")
             self.automatischKnop.grid(row=5, column=2, columnspan=1)
             self.automatischKnop.config(width=20, height=2)
         else:
-            self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto)
+            self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto, fg="white", bg="dim gray")
             self.automatischKnop.grid(row=5, column=2, columnspan=1)
             self.automatischKnop.config(width=20, height=2)
 
@@ -287,18 +287,18 @@ class Besturing(Frame):
         self.schermOmhoogKnop.config(state=DISABLED)
         self.schermOmlaagKnop.config(state=DISABLED)
         self.instellingenKnop.config(state=DISABLED)
-        self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto)
+        self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto, fg="white", bg="dim gray")
         self.automatischKnop.grid(row=5, column=2, columnspan=1)
-        self.automatischKnop.config(width=15, height=1)
+        self.automatischKnop.config(width=20, height=2)
         self.controller.goAuto(self.active_arduino.get())
 
     def stopAuto(self):
         self.schermOmhoogKnop.config(state=NORMAL)
         self.schermOmlaagKnop.config(state=NORMAL)
         self.instellingenKnop.config(state=NORMAL)
-        self.automatischKnop = Button(self, text="automatisch", command=self.goAuto)
+        self.automatischKnop = Button(self, text="automatisch", command=self.goAuto, fg="white", bg="dim gray")
         self.automatischKnop.grid(row=5, column=2, columnspan=1)
-        self.automatischKnop.config(width=15, height=1)
+        self.automatischKnop.config(width=20, height=2)
         self.controller.stopAuto(self.active_arduino.get())
     def getContent(self):
         return self.content
@@ -312,9 +312,11 @@ class Instellingen(Frame):
         self.active_arduino = None
         getNavigationInstellingen(self)  # get besturing
         self.pane=Frame(self)
-        self.selectSchermKnop = getSelectScherm(self.pane, self.arduinoList)
         self.pane.grid(row=1, column=0, columnspan=2, sticky=NW) #north west
         self.lastArduinoUpdated = None
+
+        self.pane = Frame(self)
+        self.pane.config(background='white')
 
         self.selectSchermKnop = getSelectScherm(self.pane, self.arduinoList) # 'selecteer scherm' knop
         self.tijd = getTime(self.pane)
@@ -323,6 +325,7 @@ class Instellingen(Frame):
         self.lichtintensiteit = getLight(self.pane)
         self.hoogte = getDistance( self.pane)
 
+        self.pane.grid(row=1, column=0, columnspan=3, rowspan=8, pady=25, padx=10, sticky=NW) #north west
 
         def on_button():
             print(self.temperatuurInvul.get())
@@ -332,49 +335,70 @@ class Instellingen(Frame):
             print(self.lichtInvul.get())
             self.master.controller.arduino_list[self.active_arduino.get()].set_light_thres(self.lichtInvul.get())
 
-        self.tempLabel = Label(self, text="drempelwaarde voor temperatuur", wraplength=100)
-        self.tempLabel.grid(row=1, column =2)
+        self.pane1 = Frame(self)
+        self.pane1.config(background='light grey')
+
+        self.tempLabel = Label(self.pane1, text="drempelwaarde voor temperatuur", wraplength=100, bg="light grey")
+        self.tempLabel.grid(row=1, column=0)
+        self.tempLabel.config(width=15)
+
+        self.gradenLabel = Label(self.pane1, text="°C", height=1, bg="light grey")
+        self.gradenLabel.grid(row=1, column=2)
+        self.gradenLabel.config(width=5)
+
 
         self.tempText = StringVar()
-        self.temperatuurInvul = Entry(self, fg="black", textvariable=self.tempText)
+        self.temperatuurInvul = Entry(self.pane1, fg="black", textvariable=self.tempText)
         self.tempText.set(self.master.controller.arduino_list[self.active_arduino.get()].get_temp_threshold())
-        self.temperatuurInvul.grid(row=1, column=3, columnspan=1)
-        self.temperatuurInvul.config(width=10)
+        self.temperatuurInvul.grid(row=1, column=1, columnspan=1)
+        self.temperatuurInvul.config(width=7)
 
-        self.fillerLabel1 = Label(self)
-        self.fillerLabel1.grid(row=2, column=3, columnspan=2)
+        self.fillerLabel1 = Label(self.pane1, bg="light grey")
+        self.fillerLabel1.grid(row=2, column=0, columnspan=3)
 
-        self.hoogteLabel = Label(self, text="maximale uitrolstand", height=1)
+        self.cmLabel = Label(self.pane1, text="maximale uitrolstand", height=1, bg="light grey")
+        self.cmLabel.grid(row=3, column=0)
+
+        self.hoogteLabel = Label(self.pane1, text="cm", height=1, bg="light grey")
         self.hoogteLabel.grid(row=3, column=2)
+        self.hoogteLabel.config(width=5)
 
         self.hoogteText = StringVar()
-        self.hoogteInvul = Entry(self, fg="black", textvariable=self.hoogteText)
+        self.hoogteInvul = Entry(self.pane1, fg="black", textvariable=self.hoogteText)
         self.hoogteText.set(self.master.controller.arduino_list[self.active_arduino.get()].get_distance_threshold())
-        self.hoogteInvul.grid(row=3, column=3, columnspan=1)
-        self.hoogteInvul.config(width=15)
+        self.hoogteInvul.grid(row=3, column=1, columnspan=1)
+        self.hoogteInvul.config(width=7)
 
-        self.fillerLabel1 = Label(self)
-        self.fillerLabel1.grid(row=4, column=3, columnspan=2)
+        self.fillerLabel1 = Label(self.pane1, bg="light grey")
+        self.fillerLabel1.grid(row=4, column=0, columnspan=3)
 
-        self.lichtLabel = Label(self, text="drempelwaarde voor licht", wraplength=100)
-        self.lichtLabel.grid(row=5, column=2)
+        self.lichtLabel = Label(self.pane1, text="drempelwaarde voor licht", wraplength=100, bg="light grey")
+        self.lichtLabel.grid(row=5, column=0)
+        self.lichtLabel.config(width=15)
+
+        self.luxLabel = Label(self.pane1, text="lux", height=1, bg="light grey")
+        self.luxLabel.grid(row=5, column=2)
+        self.luxLabel.config(width=5)
 
         self.lichtText = StringVar()
-        self.lichtInvul = Entry(self, fg="black", textvariable=self.lichtText)
+        self.lichtInvul = Entry(self.pane1, fg="black", textvariable=self.lichtText)
         self.lichtText.set(self.master.controller.arduino_list[self.active_arduino.get()].get_light_threshold())
-        self.lichtInvul.grid(row=5, column=3, columnspan=1)
-        self.lichtInvul.config(width=15)
+        self.lichtInvul.grid(row=5, column=1, columnspan=1)
+        self.lichtInvul.config(width=7)
 
-        self.fillerLabel1 = Label(self)
-        self.fillerLabel1.grid(row=6, column=3, columnspan=2)
+        self.fillerLabel1 = Label(self.pane1, bg="light grey")
+        self.fillerLabel1.grid(row=6, column=3, columnspan=3)
 
-        self.enterKnop = Button(self, text="Okto", fg="black", command=on_button)
-        self.enterKnop.grid(row=7, column=2, columnspan=1)
-        self.enterKnop.config(width=15, height=2)
+        self.enterKnop = Button(self.pane1, text="Okto", fg="white", bg="dim gray", command=on_button)
+        self.enterKnop.grid(row=7, column=0, columnspan=1)
+        self.enterKnop.config(width=8, height=1)
 
-        self.annuleerKnop = Button(self, text="annuleer", fg="black", command=master.updateView0)
-        self.annuleerKnop.grid(row=7, column=3, columnspan=1)
-        self.annuleerKnop.config(width=15, height=2)
+        self.annuleerKnop = Button(self.pane1, text="Annuleer", fg="white", bg="dim gray", command=master.updateView0)
+        self.annuleerKnop.grid(row=7, column=1, columnspan=1)
+        self.annuleerKnop.config(width=8, height=1)
+
+        self.pane1.grid(row=1, column=1, columnspan=3, rowspan=8, pady=25, padx=10, sticky=NW)  # north west
+
 
 class Statistieken(Frame):
     def __init__(self, master):
