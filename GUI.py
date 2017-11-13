@@ -132,7 +132,6 @@ def getTime(frame):
     s = time.strftime('%H:%M:%S')
     if s != klok["text"]:
         klok["text"] = s
-    klok.after(200, getTime)
 
 def aantalSchermen(frame):
     schermenLabel = Label(frame, text="aantal schermen is" , bg='white')
@@ -148,12 +147,13 @@ def getTemp(frame):
     temperatuurLabel.grid(row=5, column=0, columnspan=1)
     temperatuurLabel.config(width=15, height=1)
 
-    temperatuur = Label(frame, bg='white')
+    temperatuur1 =   frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].sendCommand("get_temp")[1]
+    temperatuur = Label(frame, bg='white', text=temperatuur1)
     temperatuur.grid(row=5, column=1, columnspan=1)
     temperatuur.config(width=15, height=1)
 
-    temperatuur1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].sendCommand("get_temp")[1]
-    temperatuur1.after(200, getTemp)
+
+    return temperatuur1
 
 def getDistance(frame):
     distanceLabel = Label(frame, text="hoogte", bg='white')
@@ -165,7 +165,7 @@ def getDistance(frame):
     distance.config(width=15, height=1)
 
     distance1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].sendCommand("get_distance")[1]
-    distance1.after(200, getTemp)
+    return distance1
 
 def getLight(frame):
     lightLabel = Label(frame, text="lichtintensiteit", bg='white')
@@ -177,8 +177,7 @@ def getLight(frame):
     light.config(width=15, height=1)
 
     light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].sendCommand("get_light")[1]
-    light1.after(200, getLight)
-
+    return light1
 
 
 class Besturing(Frame):
@@ -203,7 +202,7 @@ class Besturing(Frame):
         self.hoogte = getDistance( self.pane)
 
         self.instellingenKnop = getInstellingen(self)                    # 'instellingen' knop
-        self.pane.grid(row=1, column=0, columnspan=2, rowspan=1, sticky=NW) #north west
+        self.pane.grid(row=1, column=0, columnspan=2, rowspan=7, sticky=NW) #north west
 
         def schermOmhoog():
             self.controller.schermOmhoog(self.active_arduino.get())
