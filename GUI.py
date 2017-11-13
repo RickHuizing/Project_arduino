@@ -35,6 +35,7 @@ class MainView(Tk):
         self.update()
 
     def doUpdate(self):
+
         self.controller.update()
         self.update()
 
@@ -56,8 +57,8 @@ class MainView(Tk):
                     self.view.schermOmlaagKnop.config(state=NORMAL)
                     self.view.instellingenKnop.config(state=NORMAL)
                     self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto)
-                    self.view.automatischKnop.grid(row=3, column=2, columnspan=1)
-                    self.view.automatischKnop.config(width=15, height=2)
+                    self.view.automatischKnop.grid(row=6, column=2, columnspan=1)
+                    self.view.automatischKnop.config(width=15, height=1)
                 updateSelectScherm(self.view, self.controller.arduino_list)
             if isinstance(self.view, Instellingen):
                 pass
@@ -217,7 +218,6 @@ class Besturing(Frame):
         self.hoogte = getDistance( self.pane)
 
         self.instellingenKnop = getInstellingen(self)                    # 'instellingen' knop
-        self.pane.grid(row=1, column=0, columnspan=2, rowspan=6, sticky=NW) #north west
         self.pane.grid(row=1, column=0, columnspan=2, rowspan=7, sticky=NW) #north west
 
         def schermOmhoog():

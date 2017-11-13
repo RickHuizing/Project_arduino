@@ -72,7 +72,10 @@ class Controller:
         self.updateArduinoList()
 
         for x in self.connectedArduinoList:
-            self.connectedArduinoList[x].update()
+            try:
+                self.connectedArduinoList[x].update()
+            except:
+                print(sys.exc_info())
 
 
 

@@ -33,7 +33,7 @@ uint8_t autoTask = 0;
 
 
 //typen: UNDEFINED = 0,	LICHT = 1,	TEMPERATUUR = 2
-int besturingsType = 1;
+int besturingsType = 2;
 
 int float_to_constchar(float number){
 	float numbah = number;
@@ -228,7 +228,6 @@ void handleScherm(int autom){
 			}
 		ledUit(ledGeel);
 		_delay_ms(15);
-
 	}
 }
 void auto_screen_contr(){
@@ -334,13 +333,13 @@ void readCommands()
 		if (!strcmp(buffer, "light_thres_plus")) {
 			commandread=1;
 			float huidig = eeprom_read_float(lightThresholdAddr);
-			huidig += 1.0;
+			huidig += 10.0;
 			eeprom_update_float(lightThresholdAddr, huidig);
 		}
 		if (!strcmp(buffer, "light_thres_min")) {
 			commandread=1;
 			float huidig = eeprom_read_float(lightThresholdAddr);
-			huidig -= 1.0;
+			huidig -= 10.0;
 			eeprom_update_float(lightThresholdAddr, huidig);
 		}
 		if (!strcmp(buffer, "get_light_thres")) {
@@ -461,20 +460,3 @@ void ser_readln(char *line, uint8_t bufsize) {
 		line[p]='\0';
 	} while ((c!='\n') && (p<bufsize-1));
 }
-
-/*void EEPROMWriteInt(int address, int value)
-{
-	byte two = (value & 0xFF);
-	byte one = ((value >> 8) & 0xFF);
-
-	EEPROM.update(address, two);
-	EEPROM.update(address + 1, one);
-}
-
-int EEPROMReadInt(int address)
-{
-	long two = EEPROM.read(address);
-	long one = EEPROM.read(address + 1);
-
-	return ((two << 0) & 0xFFFFFF) + ((one << 8) & 0xFFFFFFFF);
-}*/
