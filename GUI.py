@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import _setit
 from controller import *
 
 class MainView(Tk):
@@ -31,6 +32,33 @@ class MainView(Tk):
         self.view.config(background="grey")
         self.update()
 
+    def doUpdate(self):
+        self.controller.update()
+        self.update()
+
+        if hasattr(self, 'view'):
+            if isinstance(self.view, Besturing):
+                active_arduino = self.view.active_arduino.get()
+                if active_arduino not in self.controller.connectedArduinoList:
+                    self.view.schermOmhoogKnop.config(state=DISABLED)
+                    self.view.schermOmlaagKnop.config(state=DISABLED)
+                    self.view.instellingenKnop.config(state=DISABLED)
+                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.stopAuto)
+                    self.view.automatischKnop.grid(row=3, column=2, columnspan=1)
+                    self.view.automatischKnop.config(width=15, height=2)
+                    self.view.automatischKnop.config(state=DISABLED)
+                    if active_arduino in self.controller.autoArduinoList:
+                        self.view.automatischKnop.config(state=NORMAL)
+                elif self.view.active_arduino.get() in self.controller.connectedArduinoList:
+                    self.view.schermOmhoogKnop.config(state=NORMAL)
+                    self.view.schermOmlaagKnop.config(state=NORMAL)
+                    self.view.instellingenKnop.config(state=NORMAL)
+                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto)
+                    self.view.automatischKnop.grid(row=3, column=2, columnspan=1)
+                    self.view.automatischKnop.config(width=15, height=2)
+                updateSelectScherm(self.view, self.controller.arduino_list)
+        self.after(100, self.doUpdate)
+
 # functie voor het doorgeven van parameters
 def wrapper1(func, args): #arguments niet in list
     return(func(args))
@@ -44,12 +72,12 @@ def getNavigation(frame):
     frame.besturingKnop.config(width=35, height=2)
 
     frame.statistiekenKnop = Button(frame, text="statistieken", fg="black", command=frame.master.updateView2)
-    frame.statistiekenKnop.grid(row=0, column=2, columnspan=1)
+    frame.statistiekenKnop.grid(row=0, column=2, columnspan=2)
     frame.statistiekenKnop.config(width=35, height=2)
 
 def getSelectScherm(frame, arduinoList):
     # lijstje maken met aangesloten arduino poorten
-    lijst = list(arduinoList.keys())
+    lijst = list(arduinoList)
     if len(lijst) == 0:
         lijst = ["noArduino"]
 
@@ -58,21 +86,45 @@ def getSelectScherm(frame, arduinoList):
     frame.master.active_arduino.set(lijst[0])  # default value
 
     arglist = [frame, frame.master.active_arduino, lijst]  # lijstje met parameters
-    frame.selecteerSchermKnop = wrapper2(OptionMenu, arglist)
-    frame.selecteerSchermKnop.grid(row=1, column=0, columnspan=1)
-    frame.selecteerSchermKnop.config(width=15, height=2, )
+    selecteerSchermKnop = wrapper2(OptionMenu, arglist)
+    selecteerSchermKnop.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=NW) #north west
+    selecteerSchermKnop.config(width=15, height=2,)
+    return selecteerSchermKnop
+
+def updateSelectScherm(frame, arduinoList):
+    knop = frame.selectSchermKnop
+
+    # lijstje maken met aangesloten arduino poorten
+    lijst = list(arduinoList.keys())
+    if len(lijst) == 0:
+        lijst = ["noArduino"]
+
+    # variabel met de actieve arduino(wordt aangepast door de OtionMenu(dropdown
+    try:
+        knop['menu'].delete(0, 'end')
+    except:
+        print(sys.exc_info())
+    frame.active_arduino.set(lijst[0])  # default value
+
+    for command in lijst:
+        try:
+            knop['menu'].add_command(label=command, command=_setit(frame.active_arduino, command))
+        except:
+            print(sys.exc_info())
+
 
 def getInstellingen(frame):
-    frame.instellingenKnop = Button(frame, text="instellingen", fg="black", command=frame.master.updateView1)
-    frame.instellingenKnop.grid(row=1, column=2, columnspan=1)
-    frame.instellingenKnop.config(width=15, height=2)
+    instellingenKnop = Button(frame, text="instellingen", fg="black", command=frame.master.updateView1)
+    instellingenKnop.grid(row=1, column=2, columnspan=1)
+    instellingenKnop.config(width=15, height=2)
+    return instellingenKnop
 
 class Besturing(Frame):
     def __init__(self, master, controller):
         Frame.__init__(self, master)
         self.master = master
-        self.arduinoList = controller.getConnectedArduinolist()
-        active_arduino = None
+        self.arduinoList = controller.arduino_list
+        self.active_arduino = None
         self.controller = controller
 
         getNavigation(self) # get navigatiebalk
@@ -80,27 +132,52 @@ class Besturing(Frame):
         self.pane = Frame(self)
         self.pane.config(background='white')
 
-        getSelectScherm(self.pane, self.arduinoList) # 'selecteer scherm' knop
-        getInstellingen(self)                    # 'instellingen' knop
-        self.pane.grid(row=1, column=0, columnspan=2, rowspan=1)
+        self.selectSchermKnop = getSelectScherm(self.pane, self.arduinoList) # 'selecteer scherm' knop
+
+        self.instellingenKnop = getInstellingen(self)                    # 'instellingen' knop
+        self.pane.grid(row=1, column=0, columnspan=2, rowspan=6, sticky=NW) #north west
 
         def schermOmhoog():
             self.controller.schermOmhoog(self.active_arduino.get())
         def schermOmlaag():
             self.controller.schermOmlaag(self.active_arduino.get())
+
         self.schermOmhoogKnop = Button(self, text="omhoog", fg="black", command=schermOmhoog)
         self.schermOmhoogKnop.grid(row=2, column=2, columnspan=1)
         self.schermOmhoogKnop.config(width=15, height=2)
-
-
-        self.automatischKnop = Checkbutton(self, text="automatisch")
-        self.automatischKnop.grid(row=3, column=2, columnspan=1)
-        self.automatischKnop.config(width=15, height=2)
 
         self.schermOmlaagKnop = Button(self, text="omlaag", fg="black", command=schermOmlaag)
         self.schermOmlaagKnop.grid(row=4, column=2, columnspan=1)
         self.schermOmlaagKnop.config(width=15, height=2)
 
+
+
+        if self.active_arduino.get() not in controller.autoArduinoList:
+            self.automatischKnop = Button(self, text="automatisch", command=self.goAuto)
+            self.automatischKnop.grid(row=3, column=2, columnspan=1)
+            self.automatischKnop.config(width=15, height=2)
+        else:
+            self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto)
+            self.automatischKnop.grid(row=3, column=2, columnspan=1)
+            self.automatischKnop.config(width=15, height=2)
+
+    def goAuto(self):
+        self.schermOmhoogKnop.config(state=DISABLED)
+        self.schermOmlaagKnop.config(state=DISABLED)
+        self.instellingenKnop.config(state=DISABLED)
+        self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto)
+        self.automatischKnop.grid(row=3, column=2, columnspan=1)
+        self.automatischKnop.config(width=15, height=2)
+        self.controller.goAuto(self.active_arduino.get())
+
+    def stopAuto(self):
+        self.schermOmhoogKnop.config(state=NORMAL)
+        self.schermOmlaagKnop.config(state=NORMAL)
+        self.instellingenKnop.config(state=NORMAL)
+        self.automatischKnop = Button(self, text="automatisch", command=self.goAuto)
+        self.automatischKnop.grid(row=3, column=2, columnspan=1)
+        self.automatischKnop.config(width=15, height=2)
+        self.controller.stopAuto(self.active_arduino.get())
     def getContent(self):
         return self.content
 
@@ -109,40 +186,47 @@ class Instellingen(Frame):
         #setup the mainframe
         Frame.__init__(self, master)
 
-        self.arduinoList = master.controller.getConnectedArduinolist()
-
+        self.arduinoList = master.controller.findarduino()
+        self.active_arduino = None
         getNavigation(self)  # get besturing
-
-        getSelectScherm(self, self.arduinoList)
-
+        self.pane=Frame(self)
+        getSelectScherm(self.pane, self.arduinoList)
+        self.pane.grid(row=1, column=0, columnspan=2, sticky=NW) #north west
         def on_button():
             print(self.temperatuurInvul.get())
+            self.master.controller.arduino_list[self.active_arduino.get()].set_temp_thres(self.temperatuurInvul.get())
             print(self.hoogteInvul.get())
+            self.master.controller.arduino_list[self.active_arduino.get()].set_distance_thres(self.hoogteInvul.get())
             print(self.lichtInvul.get())
+            self.master.controller.arduino_list[self.active_arduino.get()].set_light_thres(self.lichtInvul.get())
 
+        self.tempLabel = Label(self, text="drempelwaarde voor temperatuur", wraplength=100)
+        self.tempLabel.grid(row=1, column =2)
+        self.temperatuurInvul = Entry(self, fg="black")
+        self.temperatuurInvul.grid(row=1, column=3, columnspan=1)
+        self.temperatuurInvul.insert(0,self.master.controller.arduino_list[self.active_arduino.get()].get_temp_threshold())
+        self.temperatuurInvul.config(width=10)
 
-        self.temperatuurInvul = Entry(self, text="vul temp", fg="black")
-        self.temperatuurInvul.grid(row=3, column=1, columnspan=3)
-        self.temperatuurInvul.config(width=15)
-
-        self.enterKnop = Button(self, text="enter", fg="black", command=on_button)
-        self.enterKnop.grid(row=6, column=1, columnspan=3)
-        self.enterKnop.config(width=15, height=2)
-
-        self.hoogteInvul = Entry(self, text="vul hoogte", fg="black")
-        self.hoogteInvul.grid(row=4, column=1, columnspan=3)
+        self.hoogteLabel = Label(self, text="maximale uitrolstand", height=1)
+        self.hoogteLabel.grid(row=2, column=2)
+        self.hoogteInvul = Entry(self, fg="black")
+        self.hoogteInvul.insert(0, self.master.controller.arduino_list[self.active_arduino.get()].get_distance_threshold())
+        self.hoogteInvul.grid(row=2, column=3, columnspan=1)
         self.hoogteInvul.config(width=15)
 
-        self.lichtInvul = Entry(self, text="vul licht", fg="black")
-        self.lichtInvul.grid(row=5, column=1, columnspan=3)
+        self.lichtLabel = Label(self, text="drempelwaarde voor licht", wraplength=100)
+        self.lichtLabel.grid(row=3, column=2)
+        self.lichtInvul = Entry(self, fg="black")
+        self.lichtInvul.grid(row=3, column=3, columnspan=1)
+        self.lichtInvul.insert(0,self.master.controller.arduino_list[self.active_arduino.get()].get_light_threshold())
         self.lichtInvul.config(width=15)
 
         self.enterKnop = Button(self, text="Okto", fg="black", command=on_button)
-        self.enterKnop.grid(row=6, column=1, columnspan=3)
+        self.enterKnop.grid(row=6, column=2, columnspan=1)
         self.enterKnop.config(width=15, height=2)
 
         self.annuleerKnop = Button(self, text="annuleer", fg="black", command=master.updateView0)
-        self.annuleerKnop.grid(row=6, column=3, columnspan=3)
+        self.annuleerKnop.grid(row=6, column=3, columnspan=1)
         self.annuleerKnop.config(width=15, height=2)
 
 class Statistieken(Frame):

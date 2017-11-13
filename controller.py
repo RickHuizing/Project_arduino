@@ -48,13 +48,16 @@ class Controller:
         print('disconnected arduino')
 
     def goAuto(self, luik):
+        luik = self.connectedArduinoList[luik]
         print(luik.request('go_auto'))
-        luik.ser_close()
+        self.disconnectArduino(luik.port)
         self.autoArduinoList[luik.port] = luik
 
     def stopAuto(self, luik):
+        luik = self.arduino_list[luik]
         del self.autoArduinoList[luik.port]
-        luik.ser_init()
+        self.connectArduino(luik.port)
+
         '''
         while 1:
             x = luik.ser.readline().decode('ascii').strip()
@@ -69,21 +72,6 @@ class Controller:
         self.updateArduinoList()
         # update arduino's and detect ones that are disconnected
 
-        for a in self.connectedArduinoList.values():
-            try:
-                b=a
-                #a.update()
-                # a.request("info")
-                #a.sendCommand("get_distance")
-                #a.sendCommand("get_dist_thres")
-                #a.sendCommand("get_temp")
-                #a.sendCommand("get_temp_thres")
-                #a.sendCommand("up")
-                #a.sendCommand("get_distance")
-
-            except arduino.serial.SerialException:
-                print('The device on port ' +a.port+' can not be found or can not be configured.')
-                print(sys.exc_info())
 
     # zoekt naar aangesloten arduino's aan de pc en update aan de hand daarvan de lijst met (actieve) arduino's
     def updateArduinoList(self):
@@ -94,8 +82,6 @@ class Controller:
         # zijn er arduino's in de lijst met aangesloten arduino's die niet zijn aangesloten?
         for x in self.connectedArduinoList:
             if x not in port_list:
-                disconnectedArduinoList.append(x)
-            if x in self.autoArduinoList:
                 disconnectedArduinoList.append(x)
         [self.disconnectArduino(x) for x in disconnectedArduinoList] # verbreek dan de verbinding
 
@@ -108,6 +94,11 @@ class Controller:
                 if x not in self.autoArduinoList:
                     self.connectArduino(x)            # maak dan een verbinding
                 port_list.remove(x)                     # en dan is alles goed
+        iterate_auto = self.autoArduinoList.copy()
+        for x in iterate_auto:
+            if x not in iterate_port_list:
+                del self.arduino_list[x]
+                del self.autoArduinoList[x]
 
         for x in port_list:                         # voor de over gebleven poorten(dit zijn nieuw aangesloten arduino's)
             self.add_arduino(x)               # voeg ze toe
@@ -132,15 +123,3 @@ class Controller:
     def schermOmlaag(self, port):
         if port in self.connectedArduinoList:
             self.connectedArduinoList[port].sendCommand("down")
-
-
-'''
-controller = Controller()
-while True:
-    try:                        #probeer dit
-        controller.update()
-    except:                     # foutje?
-        print('oeps')           # zeg oeps
-        print(sys.exc_info())   # stuur het foutje door naar de terminal zonder het programma stop te zetten
-    time.sleep(0.25)
-'''

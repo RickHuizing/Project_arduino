@@ -82,6 +82,11 @@ class Arduino:
             time.sleep(0.05)
             response = (response[0], self.ser.readline().decode('ascii').strip())
         print("command: "+command+" completed, result: "+response[0]+", "+response[1])
+        #clean-up
+        self.ser.readline()
+        self.ser.readline()
+        self.ser.readline()
+        self.ser.readline()
         return response
 
     # probeer een handshake te maken(= checken of er verbinding is)
@@ -133,38 +138,57 @@ class Arduino:
 
     def get_light_threshold(self):
         lightThres = self.request("get_light_thres")
-        return lightThres
-    def light_threshold_plus(self):
-        self.request("light_thres_plus")
-    def light_threshold_min(self):
-        self.request("light_thres_min")
+        return lightThres[1][:-3]
 
+    def set_light_thres(self, thres):
+        oldThres=int(self.get_light_threshold())
+        thres = int(thres)
+        if oldThres>thres:
+            times = oldThres-thres
+            while times!=0:
+                self.request("light_thres_min")
+                times-=1
+        elif oldThres<thres:
+            times = thres-oldThres
+            while times!=0:
+                self.request("light_thres_plus")
+                times -= 1
     def get_temp_threshold(self):
         tempThres = self.request("get_temp_thres")
-        return tempThres
-    def temperature_threshold_plus(self):
-        self.request("temp_thres_plus")
-    def temperature_threshold_min(self):
-        self.request("temp_thres_min")
+        return tempThres[1][:-2]
+    def set_temp_thres(self, thres):
+        oldThres=int(self.get_temp_threshold())
+        thres = int(thres)
+        if oldThres>thres:
+            times = oldThres-thres
+            while times!=0:
+                self.request("temp_thres_min")
+                times-=1
+        elif oldThres<thres:
+            times = thres-oldThres
+            while times!=0:
+                self.request("temp_thres_plus")
+                times -=1
+
 
     def get_distance_threshold(self):
         dist_thres = self.request("get_dist_thres")
-        return dist_thres
+        print(dist_thres)
+        return dist_thres[1][:-2]
+    def set_distance_thres(self, thres):
+        oldThres=int(self.get_distance_threshold())
+        thres = int(thres)
+        if oldThres>thres:
+            times = oldThres-thres
+            while times!=0:
+                self.request("dist_thres_min")
+                times-=1
+        elif oldThres<thres:
+            times = thres-oldThres
+            while times!=0:
+                self.request("dist_thres_plus")
+                times -= 1
 
-    def distance_threshold_plus(self):
-        self.request("dist_thres_plus")
-
-    def distance_threshold_min(self):
-        self.request("dist_thres_min")
-
-    def go_auto(self):
-        #jemoeder_________________________________________________________________________________________________
-        # jemoeder_________________________________________________________________________________________________
-        # jemoeder_________________________________________________________________________________________________
-        # jemoeder_________________________________________________________________________________________________
-        print(self.request("go_auto"))
-    def stop_auto(self):
-        print(self.request("stop"))
 
 
 
