@@ -138,7 +138,7 @@ def getTime(frame):
     s = time.strftime('%H:%M:%S')
     if s != klok["text"]:
         klok["text"] = s
-    klok.after(200, getTime)
+
 
 def aantalSchermen(frame):
     schermenLabel = Label(frame, text="aantal schermen is" , bg='white')
@@ -154,7 +154,7 @@ def getTemp(frame):
     temperatuurLabel.grid(row=5, column=0, columnspan=1)
     temperatuurLabel.config(width=15, height=1)
 
-    temperatuur1 =   frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].sendCommand("get_temp")[1]
+    temperatuur1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_temp")[1]
     temperatuur = Label(frame, bg='white', text=temperatuur1)
     temperatuur.grid(row=5, column=1, columnspan=1)
     temperatuur.config(width=15, height=1)
@@ -171,7 +171,7 @@ def getDistance(frame):
     distance.grid(row=6, column=1, columnspan=1)
     distance.config(width=15, height=1)
 
-    distance1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].sendCommand("get_distance")[1]
+    distance1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_distance")[1]
     return distance1
 
 def getLight(frame):
@@ -183,7 +183,7 @@ def getLight(frame):
     light.grid(row=7, column=1, columnspan=1)
     light.config(width=15, height=1)
 
-    light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].sendCommand("get_light")[1]
+    light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_light")[1]
     return light1
 
 
