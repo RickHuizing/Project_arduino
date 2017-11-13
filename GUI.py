@@ -95,8 +95,8 @@ def getSelectScherm(frame, arduinoList):
 
     arglist = [frame, frame.master.active_arduino, lijst]  # lijstje met parameters
     selecteerSchermKnop = wrapper2(OptionMenu, arglist)
-    selecteerSchermKnop.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=NW) #north west
-    selecteerSchermKnop.config(width=15, height=2,)
+    selecteerSchermKnop.grid(row=0, column=0, columnspan=3, rowspan=1, pady=3, padx=3, ipady=3, ipadx=3, sticky=N) #north west
+    selecteerSchermKnop.config(width=15, height=1)
     return selecteerSchermKnop
 
 def updateSelectScherm(frame, arduinoList):
@@ -123,17 +123,17 @@ def updateSelectScherm(frame, arduinoList):
 
 def getInstellingen(frame):
     instellingenKnop = Button(frame, text="instellingen", fg="black", command=frame.master.updateView1)
-    instellingenKnop.grid(row=1, column=2, columnspan=1)
+    instellingenKnop.grid(row=1, column=2, columnspan=2)
     instellingenKnop.config(width=15, height=1)
     return instellingenKnop
 
 def getTime(frame):
     klokLabel = Label(frame, text="tijd", bg='white')
-    klokLabel.grid(row=3, column=0, columnspan=1)
+    klokLabel.grid(row=4, column=0, columnspan=1)
     klokLabel.config(width=15, height=1)
 
     klok = Label(frame,  bg='white')
-    klok.grid(row=3, column=1, columnspan=1)
+    klok.grid(row=4, column=2, columnspan=1)
     klok.config(width=15, height=1)
 
     s = time.strftime('%H:%M:%S')
@@ -144,30 +144,30 @@ def getTime(frame):
 def aantalSchermen(frame):
     text = "aantal schermen is " +str(len(frame.master.master.controller.arduino_list))
     schermenLabel = Label(frame, text="aantal schermen is" , bg='white')
-    schermenLabel.grid(row=4, column=0, columnspan=1)
+    schermenLabel.grid(row=5, column=0, columnspan=1)
     schermenLabel.config(width=15, height=1)
 
     schermen = Label(frame, text="0" , bg='white')
-    schermen.grid(row=4, column=1, columnspan=1)
+    schermen.grid(row=5, column=2, columnspan=1)
     schermen.config(width=15, height=1)
 
 def getTemp(frame):
     temperatuurLabel = Label(frame, text="temperatuur", bg='white')
-    temperatuurLabel.grid(row=5, column=0, columnspan=1)
+    temperatuurLabel.grid(row=6, column=0, columnspan=1)
     temperatuurLabel.config(width=15, height=1)
     try:
         temperatuur1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_temp")[1]
     except:
         temperatuur1 = "temp nvt"
     temperatuur = Label(frame, bg='white', text=temperatuur1)
-    temperatuur.grid(row=5, column=1, columnspan=1)
+    temperatuur.grid(row=6, column=2, columnspan=1)
     temperatuur.config(width=15, height=1)
 
     return temperatuur
 
 def getDistance(frame):
     distanceLabel = Label(frame, text="hoogte", bg='white')
-    distanceLabel.grid(row=6, column=0, columnspan=1)
+    distanceLabel.grid(row=7, column=0, columnspan=1)
     distanceLabel.config(width=15, height=1)
 
     try:
@@ -175,14 +175,14 @@ def getDistance(frame):
     except:
         distance1 = "afstand nvt"
     distance = Label(frame, bg='white', text=distance1)
-    distance.grid(row=6, column=1, columnspan=1)
+    distance.grid(row=7, column=2, columnspan=1)
     distance.config(width=15, height=1)
 
     return distance
 
 def getLight(frame):
     lightLabel = Label(frame, text="lichtintensiteit", bg='white')
-    lightLabel.grid(row=7, column=0, columnspan=1)
+    lightLabel.grid(row=8, column=0, columnspan=1)
     lightLabel.config(width=15, height=1)
 
     try:
@@ -190,8 +190,16 @@ def getLight(frame):
     except:
         light1 = "licht nvt"
     light = Label(frame, bg='white', text=light1)
-    light.grid(row=7, column=1, columnspan=1)
+    light.grid(row=8, column=2, columnspan=1)
     light.config(width=15, height=1)
+
+    poep = Label(frame, bg='white')
+    poep.grid(row=9, column=2, columnspan=2)
+    poep.config(width=15, height=1)
+
+    poepie = Label(frame, bg='white')
+    poepie.grid(row=3, column=2, columnspan=2)
+    poepie.config(width=15, height=1)
 
     return light
 
@@ -218,7 +226,8 @@ class Besturing(Frame):
         self.hoogte = getDistance( self.pane)
 
         self.instellingenKnop = getInstellingen(self)                    # 'instellingen' knop
-        self.pane.grid(row=1, column=0, columnspan=2, rowspan=7, sticky=NW) #north west
+
+        self.pane.grid(row=1, column=0, columnspan=3, rowspan=8, pady=25, padx=10, sticky=NW) #north west
 
         def schermOmhoog():
             self.controller.schermOmhoog(self.active_arduino.get())
@@ -274,7 +283,7 @@ class Instellingen(Frame):
         getNavigation(self)  # get besturing
         self.pane=Frame(self)
         getSelectScherm(self.pane, self.arduinoList)
-        self.pane.grid(row=1, column=0, columnspan=2, sticky=NW) #north west
+        self.pane.grid(row=1, column=1, columnspan=1, sticky=NW) #north west
         def on_button():
             print(self.temperatuurInvul.get())
             self.master.controller.arduino_list[self.active_arduino.get()].set_temp_thres(self.temperatuurInvul.get())
