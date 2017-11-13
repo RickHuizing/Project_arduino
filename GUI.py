@@ -141,6 +141,7 @@ def getTime(frame):
 
 
 def aantalSchermen(frame):
+    text = "aantal schermen is " +str(len(frame.master.master.controller.arduino_list))
     schermenLabel = Label(frame, text="aantal schermen is" , bg='white')
     schermenLabel.grid(row=4, column=0, columnspan=1)
     schermenLabel.config(width=15, height=1)
@@ -153,38 +154,45 @@ def getTemp(frame):
     temperatuurLabel = Label(frame, text="temperatuur", bg='white')
     temperatuurLabel.grid(row=5, column=0, columnspan=1)
     temperatuurLabel.config(width=15, height=1)
-
-    temperatuur1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_temp")[1]
+    try:
+        temperatuur1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_temp")[1]
+    except:
+        temperatuur1 = "temp nvt"
     temperatuur = Label(frame, bg='white', text=temperatuur1)
     temperatuur.grid(row=5, column=1, columnspan=1)
     temperatuur.config(width=15, height=1)
 
-
-    return temperatuur1
+    return temperatuur
 
 def getDistance(frame):
     distanceLabel = Label(frame, text="hoogte", bg='white')
     distanceLabel.grid(row=6, column=0, columnspan=1)
     distanceLabel.config(width=15, height=1)
 
-    distance = Label(frame, bg='white')
+    try:
+        distance1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_distance")[1]
+    except:
+        distance1 = "afstand nvt"
+    distance = Label(frame, bg='white', text=distance1)
     distance.grid(row=6, column=1, columnspan=1)
     distance.config(width=15, height=1)
 
-    distance1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_distance")[1]
-    return distance1
+    return distance
 
 def getLight(frame):
     lightLabel = Label(frame, text="lichtintensiteit", bg='white')
     lightLabel.grid(row=7, column=0, columnspan=1)
     lightLabel.config(width=15, height=1)
 
-    light = Label(frame, bg='white')
+    try:
+        light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_light")[1]
+    except:
+        light1 = "licht nvt"
+    light = Label(frame, bg='white', text=light1)
     light.grid(row=7, column=1, columnspan=1)
     light.config(width=15, height=1)
 
-    light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_light")[1]
-    return light1
+    return light
 
 
 class Besturing(Frame):
@@ -330,6 +338,7 @@ class Statistieken(Frame):
             self.grafiek = grafiek.Plot(self, lijst)
 
     def getTempHistory(self,arduino,controller):
+        return {'16:50:45': 20.32, '16:50:46': 20.32, '16:50:47': 20.32, '16:50:48': 20.81, '16:50:49': 20.32, '16:50:50': 20.32, '16:50:51': 19.83, '16:50:52': 20.32, '16:50:53': 19.83, '16:50:54': 19.83, '16:50:55': 20.32, '16:50:56': 20.32, '16:50:57': 20.32, '16:50:58': 20.32, '16:50:59': 19.83, '16:51:00': 19.83, '16:51:01': 20.32, '16:51:02': 19.83, '16:51:03': 20.32, '16:51:04': 20.32}
         self.listje = controller.arduino_list[arduino].temperature_history
         print(self.listje)
         return self.listje
