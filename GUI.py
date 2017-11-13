@@ -21,12 +21,17 @@ class MainView(Tk):
         self.updateView(2)
     def updateView(self, view):
         self.view.destroy()
+        activeArd = self.view.active_arduino.get()
         if view == 0: #besturing
             self.view = Besturing(self, self.controller)
+            self.view.active_arduino.set(activeArd)
+            print(self.view.active_arduino.get())
         if view == 1: #instellingen
             self.view = Instellingen(self)
+            self.view.active_arduino.set(activeArd)
         if view == 2: #statistieken
             self.view = Statistieken(self)
+
         self.createScreen()
 
     def createScreen(self):
@@ -61,11 +66,17 @@ class MainView(Tk):
                     self.view.automatischKnop.config(width=15, height=1)
                 updateSelectScherm(self.view, self.controller.arduino_list)
             if isinstance(self.view, Instellingen):
+                updateSelectScherm(self.view, self.view.master.controller.arduino_list)
+                if self.view.lastArduinoUpdated != self.view.active_arduino.get():
+                    self.view.lastArduinoUpdated = self.view.active_arduino.get()
+                    self.view.lichtText.set(self.view.master.controller.arduino_list[self.view.active_arduino.get()].get_light_threshold())
+                    self.view.hoogteText.set(self.view.master.controller.arduino_list[self.view.active_arduino.get()].get_distance_threshold())
+                    self.view.tempText.set(self.view.master.controller.arduino_list[self.view.active_arduino.get()].get_temp_threshold())
                 pass
             if isinstance(self.view, Statistieken):
-                #self.view
+
                 pass
-        self.after(100, self.doUpdate)
+        self.after(1000, self.doUpdate)
 
 # functie voor het doorgeven van parameters
 def wrapper1(func, args): #arguments niet in list
@@ -112,7 +123,8 @@ def updateSelectScherm(frame, arduinoList):
         knop['menu'].delete(0, 'end')
     except:
         print(sys.exc_info())
-    frame.active_arduino.set(lijst[0])  # default value
+    if frame.active_arduino.get()=="noArduino":
+        frame.active_arduino.set(lijst[0])  # default value
 
     for command in lijst:
         try:
@@ -282,8 +294,9 @@ class Instellingen(Frame):
         self.active_arduino = None
         getNavigation(self)  # get besturing
         self.pane=Frame(self)
-        getSelectScherm(self.pane, self.arduinoList)
-        self.pane.grid(row=1, column=1, columnspan=1, sticky=NW) #north west
+        self.selectSchermKnop = getSelectScherm(self.pane, self.arduinoList)
+        self.pane.grid(row=1, column=0, columnspan=2, sticky=NW) #north west
+        self.lastArduinoUpdated = None
         def on_button():
             print(self.temperatuurInvul.get())
             self.master.controller.arduino_list[self.active_arduino.get()].set_temp_thres(self.temperatuurInvul.get())
@@ -294,9 +307,11 @@ class Instellingen(Frame):
 
         self.tempLabel = Label(self, text="drempelwaarde voor temperatuur", wraplength=100)
         self.tempLabel.grid(row=1, column =2)
-        self.temperatuurInvul = Entry(self, fg="black")
+
+        self.tempText = StringVar()
+        self.temperatuurInvul = Entry(self, fg="black", textvariable=self.tempText)
+        self.tempText.set(self.master.controller.arduino_list[self.active_arduino.get()].get_temp_threshold())
         self.temperatuurInvul.grid(row=1, column=3, columnspan=1)
-        self.temperatuurInvul.insert(0,self.master.controller.arduino_list[self.active_arduino.get()].get_temp_threshold())
         self.temperatuurInvul.config(width=10)
 
         self.fillerLabel1 = Label(self)
@@ -304,8 +319,10 @@ class Instellingen(Frame):
 
         self.hoogteLabel = Label(self, text="maximale uitrolstand", height=1)
         self.hoogteLabel.grid(row=3, column=2)
-        self.hoogteInvul = Entry(self, fg="black")
-        self.hoogteInvul.insert(0, self.master.controller.arduino_list[self.active_arduino.get()].get_distance_threshold())
+
+        self.hoogteText = StringVar()
+        self.hoogteInvul = Entry(self, fg="black", textvariable=self.hoogteText)
+        self.hoogteText.set(self.master.controller.arduino_list[self.active_arduino.get()].get_distance_threshold())
         self.hoogteInvul.grid(row=3, column=3, columnspan=1)
         self.hoogteInvul.config(width=15)
 
@@ -314,9 +331,11 @@ class Instellingen(Frame):
 
         self.lichtLabel = Label(self, text="drempelwaarde voor licht", wraplength=100)
         self.lichtLabel.grid(row=5, column=2)
-        self.lichtInvul = Entry(self, fg="black")
+
+        self.lichtText = StringVar()
+        self.lichtInvul = Entry(self, fg="black", textvariable=self.lichtText)
+        self.lichtText.set(self.master.controller.arduino_list[self.active_arduino.get()].get_light_threshold())
         self.lichtInvul.grid(row=5, column=3, columnspan=1)
-        self.lichtInvul.insert(0,self.master.controller.arduino_list[self.active_arduino.get()].get_light_threshold())
         self.lichtInvul.config(width=15)
 
         self.fillerLabel1 = Label(self)

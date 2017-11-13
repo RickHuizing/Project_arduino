@@ -392,7 +392,6 @@ void readCommands()
 		}
 		if (!strcmp(buffer, "reset")) {
 			main();
-
 		}
 		if (commandread==0) {
 			ser_writeln(buffer);
