@@ -51,7 +51,7 @@ class MainView(Tk):
                     self.view.schermOmhoogKnop.config(state=DISABLED)
                     self.view.schermOmlaagKnop.config(state=DISABLED)
                     self.view.instellingenKnop.config(state=DISABLED)
-                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.stopAuto, fg="white", bg="dim gray")
+                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.stopAuto, fg="white", bg="dim gray", activebackground="snow4", activeforeground="white")
                     self.view.automatischKnop.grid(row=5, column=2, columnspan=1)
                     self.view.automatischKnop.config(width=20, height=2)
                     self.view.automatischKnop.config(state=DISABLED)
@@ -61,7 +61,7 @@ class MainView(Tk):
                     self.view.schermOmhoogKnop.config(state=NORMAL)
                     self.view.schermOmlaagKnop.config(state=NORMAL)
                     self.view.instellingenKnop.config(state=NORMAL)
-                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto, fg="white", bg="dim gray")
+                    self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto, fg="white", bg="dim gray", activebackground="snow4", activeforeground="white")
                     self.view.automatischKnop.grid(row=5, column=2, columnspan=1)
                     self.view.automatischKnop.config(width=20, height=2)
                 updateSelectScherm(self.view, self.controller.arduino_list)
@@ -264,22 +264,22 @@ class Besturing(Frame):
         def schermOmlaag():
             self.controller.schermOmlaag(self.active_arduino.get())
 
-        self.schermOmhoogKnop = Button(self, text="omhoog", fg="white", bg="dim gray", command=schermOmhoog)
+        self.schermOmhoogKnop = Button(self, text="omhoog", fg="white", bg="dim gray", command=schermOmhoog, activebackground="snow4", activeforeground="white")
         self.schermOmhoogKnop.grid(row=4, column=2, columnspan=1)
         self.schermOmhoogKnop.config(width=20, height=2)
 
-        self.schermOmlaagKnop = Button(self, text="omlaag", fg="white", bg="dim gray", command=schermOmlaag)
+        self.schermOmlaagKnop = Button(self, text="omlaag", fg="white", bg="dim gray", command=schermOmlaag, activebackground="snow4", activeforeground="white")
         self.schermOmlaagKnop.grid(row=6, column=2, columnspan=1)
         self.schermOmlaagKnop.config(width=20, height=2)
 
 
 
         if self.active_arduino.get() not in controller.autoArduinoList:
-            self.automatischKnop = Button(self, text="automatisch", command=self.goAuto, fg="white", bg="dim gray")
+            self.automatischKnop = Button(self, text="automatisch", command=self.goAuto, fg="white", bg="dim gray", activebackground="snow4", activeforeground="white")
             self.automatischKnop.grid(row=5, column=2, columnspan=1)
             self.automatischKnop.config(width=20, height=2)
         else:
-            self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto, fg="white", bg="dim gray")
+            self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto, fg="white", bg="dim gray", activebackground="snow4", activeforeground="white")
             self.automatischKnop.grid(row=5, column=2, columnspan=1)
             self.automatischKnop.config(width=20, height=2)
 
@@ -287,7 +287,7 @@ class Besturing(Frame):
         self.schermOmhoogKnop.config(state=DISABLED)
         self.schermOmlaagKnop.config(state=DISABLED)
         self.instellingenKnop.config(state=DISABLED)
-        self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto, fg="white", bg="dim gray")
+        self.automatischKnop = Button(self, text="automatisch", command=self.stopAuto, fg="white", bg="dim gray", activebackground="snow4", activeforeground="white")
         self.automatischKnop.grid(row=5, column=2, columnspan=1)
         self.automatischKnop.config(width=20, height=2)
         self.controller.goAuto(self.active_arduino.get())
@@ -296,7 +296,7 @@ class Besturing(Frame):
         self.schermOmhoogKnop.config(state=NORMAL)
         self.schermOmlaagKnop.config(state=NORMAL)
         self.instellingenKnop.config(state=NORMAL)
-        self.automatischKnop = Button(self, text="automatisch", command=self.goAuto, fg="white", bg="dim gray")
+        self.automatischKnop = Button(self, text="automatisch", command=self.goAuto, fg="white", bg="dim gray", activebackground="snow4", activeforeground="white")
         self.automatischKnop.grid(row=5, column=2, columnspan=1)
         self.automatischKnop.config(width=20, height=2)
         self.controller.stopAuto(self.active_arduino.get())
