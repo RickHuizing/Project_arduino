@@ -21,16 +21,24 @@ class MainView(Tk):
         self.updateView(2)
     def updateView(self, view):
         self.view.destroy()
-        activeArd = self.view.active_arduino.get()
-        if view == 0: #besturing
-            self.view = Besturing(self, self.controller)
-            self.view.active_arduino.set(activeArd)
-            print(self.view.active_arduino.get())
-        if view == 1: #instellingen
-            self.view = Instellingen(self)
-            self.view.active_arduino.set(activeArd)
-        if view == 2: #statistieken
-            self.view = Statistieken(self)
+        if not isinstance(self.view, Statistieken):
+            activeArd = self.view.active_arduino.get()
+            if view == 0: #besturing
+                self.view = Besturing(self, self.controller)
+                self.view.active_arduino.set(activeArd)
+                print(self.view.active_arduino.get())
+            if view == 1: #instellingen
+                self.view = Instellingen(self)
+                self.view.active_arduino.set(activeArd)
+            if view == 2: #statistieken
+                self.view = Statistieken(self)
+        if isinstance(self.view, Statistieken):
+            if view == 0: #besturing
+                self.view = Besturing(self, self.controller)
+            if view == 1: #instellingen
+                self.view = Instellingen(self)
+            if view == 2: #statistieken
+                self.view = Statistieken(self)
 
         self.createScreen()
 
@@ -74,8 +82,7 @@ class MainView(Tk):
                     self.view.tempText.set(self.view.master.controller.arduino_list[self.view.active_arduino.get()].get_temp_threshold())
                 pass
             if isinstance(self.view, Statistieken):
-
-                pass
+                self.view.doDaPlotsPlox()
         self.after(1000, self.doUpdate)
 
 # functie voor het doorgeven van parameters
@@ -172,12 +179,12 @@ def getTime(frame):
 
 
 def aantalSchermen(frame):
-    text = "aantal schermen is " +str(len(frame.master.master.controller.arduino_list))
     schermenLabel = Label(frame, text="aantal schermen is" , bg='white')
     schermenLabel.grid(row=5, column=0, columnspan=1)
     schermenLabel.config(width=15, height=1)
 
-    schermen = Label(frame, text="0" , bg='white', fg="dim gray")
+    text = str(len(frame.master.master.controller.arduino_list))
+    schermen = Label(frame, text=text, bg='white', fg="dim gray")
     schermen.grid(row=5, column=2, columnspan=1)
     schermen.config(width=15, height=1)
 
@@ -406,18 +413,74 @@ class Statistieken(Frame):
         Frame.__init__(self, master)
         self.listje ={}
         getNavigationStatistieken(self)  # get besturing
-        self.setPlot('COM10', self.master.controller)
         self.grafiek = None
-        if(len(self.listje)>0):
-           self.grafiek=grafiek.Plot(self, self.listje)
+        self.plotList = []
+        self.plotListLength = 0
 
-    def setPlot(self, arduino, controller):
+    def doDaPlotsPlox(self):
+        try:
+            for x in self.plotList:
+                x.canvas.grid_forget
+            self.plotList=[]
+            for ardport in self.master.controller.connectedArduinoList:
+                self.createPlotsTemp(ardport, self.master.controller, len(self.plotList))
+        except:
+            self.master.updateView2()
+
+
+    def createPlotsTemp(self, arduino, controller, number):
+        plotframe = Frame(self)
+        plotframe.grid(column=0, row=1+number, columnspan=3)
+        label = Label(plotframe, text=arduino)
+        label.grid(column=0, row=0)
+        plot = self.setTempPlot(arduino, controller, plotframe)
+        plot.canvas.grid(column=1, row=0, columnspan=4)
+        plot2 = self.setDistPlot(arduino, controller, plotframe)
+        plot2.canvas.grid(column=1, row=1, columnspan=4)
+
+    def createPlotsLight(self, arduino, controller):
+        plotframe = Frame(self)
+        plotframe.grid(column=0, row=1, columnspan=3)
+        label = Label(plotframe, text=arduino)
+        label.grid(column=0, row=0)
+        plot = self.setLightPlot(arduino, controller, plotframe)
+        plot.canvas.grid(column=1, row=0, columnspan=4)
+        plot2 = self.setDistPlot(arduino, controller, plotframe)
+        plot2.canvas.grid(column=1, row=1, columnspan=4)
+
+
+    def setTempPlot(self, arduino, controller, master):
         lijst = self.getTempHistory(arduino, controller)
+        print(len(lijst))
         if not len(lijst)<1:
-            self.grafiek = grafiek.Plot(self, lijst)
+            plot = grafiek.Plot(master, lijst)
+            self.plotList.append(plot)
+            return plot
 
     def getTempHistory(self,arduino,controller):
-        return {'16:50:45': 20.32, '16:50:46': 20.32, '16:50:47': 20.32, '16:50:48': 20.81, '16:50:49': 20.32, '16:50:50': 20.32, '16:50:51': 19.83, '16:50:52': 20.32, '16:50:53': 19.83, '16:50:54': 19.83, '16:50:55': 20.32, '16:50:56': 20.32, '16:50:57': 20.32, '16:50:58': 20.32, '16:50:59': 19.83, '16:51:00': 19.83, '16:51:01': 20.32, '16:51:02': 19.83, '16:51:03': 20.32, '16:51:04': 20.32}
         self.listje = controller.arduino_list[arduino].temperature_history
-        print(self.listje)
+        return self.listje
+
+    def setLightPlot(self, arduino, controller, master):
+        lijst = self.getLightHistory(arduino, controller)
+        print(len(lijst))
+        if not len(lijst)<1:
+            plot = grafiek.Plot(master, lijst)
+            self.plotList.append(plot)
+            return plot
+
+    def getLightHistory(self,arduino,controller):
+        self.listje = controller.arduino_list[arduino].light_history
+        return self.listje
+
+    def setDistPlot(self, arduino, controller, master):
+        lijst = self.getDistHistory(arduino, controller)
+        print(len(lijst))
+        if not len(lijst)<1:
+            plot = grafiek.Plot(master, lijst)
+            self.plotList.append(plot)
+            return plot
+
+    def getDistHistory(self,arduino,controller):
+        self.listje = controller.arduino_list[arduino].distance_history
         return self.listje

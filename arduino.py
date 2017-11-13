@@ -122,14 +122,33 @@ class Arduino:
         key = time.strftime('%X')[:8]
         r = self.request("get_distance")
         if r[0] == 'OK':
-            self.distance_history[key] = r[1]
+            if len(self.distance_history)>9:
+                tempHistcopy = self.distance_history.copy()
+                i=len(self.distance_history)-9
+                for x in tempHistcopy:
+                    if i>0:
+                        i-=1
+                        self.distance_history={}
+                    else:
+                        self.distance_history[x] = tempHistcopy[x]
+            self.distance_history[key] = float(r[1])
 
     # haal de data van de photocell sensor op en sla het op met de huidige uur:minuut
     def update_light(self):
         key = time.strftime('%X')[:8]
         r = self.request("get_light")
         if r[0] == 'OK':
-            self.light_history[key] = r[1]
+            if len(self.light_history)>9:
+                tempHistcopy = self.light_history.copy()
+                i=len(self.light_history)-9
+                for x in tempHistcopy:
+                    if i>0:
+                        i-=1
+                        self.light_history={}
+                    else:
+                        self.light_history[x] = tempHistcopy[x]
+                    self.light_history[key] = float(r[1])
+
 
     # haal de data van de thermometer op en sla het op met de huidige uur:minuut
     def update_temperature(self):
@@ -137,14 +156,15 @@ class Arduino:
         r = self.request("get_temp")
         print(r)
         if r[0] == 'OK':
-            if len(self.temperature_history)>15:
+            if len(self.temperature_history)>9:
                 tempHistcopy = self.temperature_history.copy()
-                i=1
+                i=len(self.temperature_history)-9
                 for x in tempHistcopy:
-                    if i==1:
-                        i=0
-                        pass
-                    self.temperature_history[x] = tempHistcopy[x]
+                    if i>0:
+                        i-=1
+                        self.temperature_history={}
+                    else:
+                        self.temperature_history[x] = tempHistcopy[x]
             self.temperature_history[key] = float(r[1])
 
 
