@@ -207,26 +207,35 @@ class Instellingen(Frame):
         self.temperatuurInvul.insert(0,self.master.controller.arduino_list[self.active_arduino.get()].get_temp_threshold())
         self.temperatuurInvul.config(width=10)
 
+        self.fillerLabel1 = Label(self)
+        self.fillerLabel1.grid(row=2, column=3, columnspan=2)
+
         self.hoogteLabel = Label(self, text="maximale uitrolstand", height=1)
-        self.hoogteLabel.grid(row=2, column=2)
+        self.hoogteLabel.grid(row=3, column=2)
         self.hoogteInvul = Entry(self, fg="black")
         self.hoogteInvul.insert(0, self.master.controller.arduino_list[self.active_arduino.get()].get_distance_threshold())
-        self.hoogteInvul.grid(row=2, column=3, columnspan=1)
+        self.hoogteInvul.grid(row=3, column=3, columnspan=1)
         self.hoogteInvul.config(width=15)
 
+        self.fillerLabel1 = Label(self)
+        self.fillerLabel1.grid(row=4, column=3, columnspan=2)
+
         self.lichtLabel = Label(self, text="drempelwaarde voor licht", wraplength=100)
-        self.lichtLabel.grid(row=3, column=2)
+        self.lichtLabel.grid(row=5, column=2)
         self.lichtInvul = Entry(self, fg="black")
-        self.lichtInvul.grid(row=3, column=3, columnspan=1)
+        self.lichtInvul.grid(row=5, column=3, columnspan=1)
         self.lichtInvul.insert(0,self.master.controller.arduino_list[self.active_arduino.get()].get_light_threshold())
         self.lichtInvul.config(width=15)
 
+        self.fillerLabel1 = Label(self)
+        self.fillerLabel1.grid(row=6, column=3, columnspan=2)
+
         self.enterKnop = Button(self, text="Okto", fg="black", command=on_button)
-        self.enterKnop.grid(row=6, column=2, columnspan=1)
+        self.enterKnop.grid(row=7, column=2, columnspan=1)
         self.enterKnop.config(width=15, height=2)
 
         self.annuleerKnop = Button(self, text="annuleer", fg="black", command=master.updateView0)
-        self.annuleerKnop.grid(row=6, column=3, columnspan=1)
+        self.annuleerKnop.grid(row=7, column=3, columnspan=1)
         self.annuleerKnop.config(width=15, height=2)
 
 class Statistieken(Frame):
