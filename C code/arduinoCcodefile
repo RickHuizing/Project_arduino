@@ -3,7 +3,7 @@
  *
  * Created: 18-10-2017 12:58:29
  *  Author: Lenovo T420
- */
+ */ 
 
 #include <avr/io.h>
 #include <stdlib.h>
@@ -33,7 +33,7 @@ uint8_t autoTask = 0;
 
 
 //typen: UNDEFINED = 0,	LICHT = 1,	TEMPERATUUR = 2
-int besturingsType = 2;
+int besturingsType = 1; 
 
 int float_to_constchar(float number){
 	float numbah = number;
@@ -89,17 +89,17 @@ int read_analog_pin(pin){
 #define TrigPin PIND4
 #define EchoPin PIND2
 volatile uint8_t pingState = 0;
-volatile float echoInches = 0;
+volatile float echoInches = 0;	
 float get_distance()
 {
 	// Turn on timer with no prescaler on the clock for fastest
 	// triggering of the interrupt service routine.
-	TCCR1B = (1<<CS10);
+	TCCR1B = (1<<CS10);						
 	TIMSK1 = (1<<TOIE1);
-
+		
 	PCICR = (1<<PCIE2);
 	PCMSK2 = (1<<PCINT18);
-
+	
 	DDRD = (1<<TrigPin);		// Set Pins As Output
 	TCNT1 = 0;
 	echoInches = 0;
@@ -108,7 +108,7 @@ float get_distance()
 	{
 		switch (pingState){
 			case 0:
-
+				
 				PORTD &= ~(1<<TrigPin);			// Set Trigger Pin To 0
 				_delay_ms(1);					// Wait
 				PORTD |= (1<<TrigPin);			// Set Trigger Pin To 1
@@ -128,9 +128,9 @@ float get_distance()
 					PORTD &= ~(1<<TrigPin);			// Set Trigger Pin To 0
 					pingState = 1;					// Increment State*/
 					//dit omdat hij de timer opnieuw laat lopen bij een overflow en ik niet weet hoe je hem uit zet
-					break;
+					break;		
 				}else{							// Otherwise
-
+					
 				}
 				pingState++;					// Increment State
 				break;
@@ -147,8 +147,8 @@ float get_avg_distance(){
 	for(int i = 0; i<times; i++){
 		avg += get_distance();
 	}
-	return (avg/times);
-}
+	return (avg/times);			
+}	
 
 ISR(PCINT2_vect){
 	if(PIND & (1<<EchoPin)){					// If EchoPin Is High
@@ -171,7 +171,7 @@ int get_type(){
 		int cx;
 		cx = snprintf ( buffer, 100, "%d", besturingsType);
 		return buffer;
-}
+}	
 void ledAan(int led){PORTB |= _BV(led);}
 void ledUit(int led){PORTB &= ~ _BV(led);}
 int volatile goingUp = 0;
@@ -225,7 +225,7 @@ void handleScherm(int autom){
 			if(get_avg_distance()>(maxDist-0.25)){
 				goingUp=0;
 				ser_writeln("went down");}
-			}
+			}	
 		ledUit(ledGeel);
 		_delay_ms(15);
 	}
@@ -248,7 +248,7 @@ void go_auto(){
 	SCH_Add_Task(auto_screen_contr,0,0);
 	while(autoTask ==1){
 		SCH_Dispatch_Tasks();
-	}
+	}	
 }
 void tellDistance(){ser_writeln(float_to_constchar(get_distance()));}
 void readStop()
@@ -275,7 +275,7 @@ int main(void)
 		SCH_Dispatch_Tasks();
 		SCH_Add_Task(readCommands,0,0);
 	}
-
+	
 }
 //is a command being processed(0=no, 1 = yes)
 uint8_t volatile commandread=0;
@@ -301,7 +301,7 @@ void readCommands()
 			commandread=1;
 			up();
 		}
-		if (!strcmp(buffer, "down")) {
+		if (!strcmp(buffer, "down")) {	
 			commandread=1;
 			down();
 		}
@@ -392,6 +392,7 @@ void readCommands()
 		}
 		if (!strcmp(buffer, "reset")) {
 			main();
+		
 		}
 		if (commandread==0) {
 			ser_writeln(buffer);
@@ -402,7 +403,7 @@ void readCommands()
 			ser_writeln("ERR");
 		}
 		commandread = 0;
-	}
+	}		
 	else{
 		//if(!strcmp(buffer, "down")){if(goingUp==1){goingUp=2;}}
 		//if(!strcmp(buffer, "up")){if(goingUp==2){goingUp=1;}}

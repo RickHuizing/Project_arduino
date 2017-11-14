@@ -75,6 +75,11 @@ class MainView(Tk):
                     self.view.automatischKnop.grid(row=5, column=2, columnspan=1)
                     self.view.automatischKnop.config(width=20, height=2)
 
+                    self.view.tijd = getTime(self.view.pane)
+                    self.view.aantalScherm = aantalSchermen(self.view.pane)
+                    self.view.temperatuur = getTemp(self.view.pane)
+                    self.view.lichtintensiteit = getLight(self.view.pane)
+                    self.view.hoogte = getDistance(self.view.pane)
                 updateSelectScherm(self.view, self.controller.arduino_list)
             if isinstance(self.view, Instellingen):
                 updateSelectScherm(self.view, self.view.master.controller.arduino_list)
@@ -83,6 +88,12 @@ class MainView(Tk):
                     self.view.lichtText.set(self.view.master.controller.arduino_list[self.view.active_arduino.get()].get_light_threshold())
                     self.view.hoogteText.set(self.view.master.controller.arduino_list[self.view.active_arduino.get()].get_distance_threshold())
                     self.view.tempText.set(self.view.master.controller.arduino_list[self.view.active_arduino.get()].get_temp_threshold())
+
+                    self.view.tijd = getTime(self.view.pane)
+                    self.view.aantalScherm = aantalSchermen(self.view.pane)
+                    self.view.temperatuur = getTemp(self.view.pane)
+                    self.view.lichtintensiteit = getLight(self.view.pane)
+                    self.view.hoogte = getDistance(self.view.pane)
                 pass
             if isinstance(self.view, Statistieken):
                 self.view.doDaPlotsPlox()
@@ -109,7 +120,7 @@ def getNavigationStatistieken(frame):
     frame.besturingKnop.grid(row=0, column=0, columnspan=1)
     frame.besturingKnop.config(width=35, height=1)
 
-    frame.statistiekenKnop = Button(frame, text="statistieken", fg="black", bg="grey", command=frame.master.updateView2)
+    frame.statistiekenKnop = Button(frame, text="statistieken", fg="white", bg="grey", command=frame.master.updateView2)
     frame.statistiekenKnop.grid(row=0, column=2, columnspan=1)
     frame.statistiekenKnop.config(width=35, height=1)
 
@@ -196,7 +207,7 @@ def getTemp(frame):
     temperatuurLabel.grid(row=6, column=0, columnspan=1)
     temperatuurLabel.config(width=15, height=1)
     try:
-        temperatuur1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_temp")[1]
+        temperatuur1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_temp")[1] +"C"
     except:
         temperatuur1 = "temp nvt"
     temperatuur = Label(frame, bg='white', text=temperatuur1, fg="dim gray")
@@ -206,12 +217,12 @@ def getTemp(frame):
     return temperatuur
 
 def getDistance(frame):
-    distanceLabel = Label(frame, text="hoogte", bg='white')
+    distanceLabel = Label(frame, text="cm uitgerold", bg='white')
     distanceLabel.grid(row=7, column=0, columnspan=1)
     distanceLabel.config(width=15, height=1)
 
     try:
-        distance1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_distance")[1]
+        distance1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_distance")[1]+" cm"
     except:
         distance1 = "afstand nvt"
     distance = Label(frame, bg='white', text=distance1, fg="dim gray")
@@ -226,7 +237,7 @@ def getLight(frame):
     lightLabel.config(width=15, height=1)
 
     try:
-        light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_light")[1]
+        light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_light")[1][:3] + "lux"
     except:
         light1 = "licht nvt"
     light = Label(frame, bg='white', text=light1, fg="dim gray")
