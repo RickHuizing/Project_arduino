@@ -449,6 +449,7 @@ class Statistieken(Frame):
 
 
     def createPlotsTemp(self, arduino, controller, number):
+
         plotframe = Frame(self)
         if number == 1:
             plotframe.grid(column=0, row=1, columnspan=3)
@@ -458,12 +459,21 @@ class Statistieken(Frame):
             plotframe.grid(column=0, row=2, columnspan=3)
         if number == 4:
             plotframe.grid(column=3, row=2, columnspan=3)
+
+        label = Label(plotframe, text=arduino)
+        label.grid(column=0, row=0)
+        label = Label(plotframe, text='graden Celcius')
+        label.grid(column=0, row=1)
+        cmLabel = Label(plotframe, text="cm", height=1)
+        cmLabel.grid(row=2, column=0)
+
         label = Label(plotframe, text=arduino)
         label.grid(column=0, row=0)
         plot = self.setTempPlot(arduino, controller, plotframe)
         plot.canvas.grid(column=1, row=0, columnspan=4)
         plot2 = self.setDistPlot(arduino, controller, plotframe)
         plot2.canvas.grid(column=1, row=1, columnspan=4)
+
 
     def createPlotsLight(self, arduino, controller, number):
         plotframe = Frame(self)
@@ -477,11 +487,14 @@ class Statistieken(Frame):
             plotframe.grid(column=3, row=2, columnspan=3)
         label = Label(plotframe, text=arduino)
         label.grid(column=0, row=0)
+        label = Label(plotframe, text='lux')
+        label.grid(column=0, row=1)
+        cmLabel = Label(plotframe, text="cm", height=1)
+        cmLabel.grid(row=2, column=0)
         plot = self.setLightPlot(arduino, controller, plotframe)
-        plot.canvas.grid(column=1, row=0, columnspan=4)
+        plot.canvas.grid(column=1, row=1, columnspan=4)
         plot2 = self.setDistPlot(arduino, controller, plotframe)
-        plot2.canvas.grid(column=1, row=1, columnspan=4)
-
+        plot2.canvas.grid(column=1, row=2, columnspan=4)
 
     def setTempPlot(self, arduino, controller, master):
         lijst = self.getTempHistory(arduino, controller)
