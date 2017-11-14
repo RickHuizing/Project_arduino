@@ -410,7 +410,7 @@ class Instellingen(Frame):
         self.fillerLabel1 = Label(self.pane1, bg="light grey")
         self.fillerLabel1.grid(row=6, column=3, columnspan=3)
 
-        self.enterKnop = Button(self.pane1, text="Okto", fg="white", bg="dim gray", command=on_button)
+        self.enterKnop = Button(self.pane1, text="Invoeren", fg="white", bg="dim gray", command=on_button)
         self.enterKnop.grid(row=7, column=0, columnspan=1)
         self.enterKnop.config(width=8, height=1)
 
@@ -436,25 +436,27 @@ class Statistieken(Frame):
             for x in self.plotList:
                 x.canvas.grid_forget
             self.plotList=[]
+            number = 1
             for ardport in self.master.controller.connectedArduinoList:
                 self.master.controller.connectedArduinoList[ardport].set_type()
                 if self.master.controller.connectedArduinoList[ardport].type !=1:
-                    self.createPlotsTemp(ardport, self.master.controller, len(self.plotList))
+                    self.createPlotsTemp(ardport, self.master.controller, number)
                 else:
-                    self.createPlotsLight(ardport, self.master.controller, len(self.plotList))
+                    self.createPlotsLight(ardport, self.master.controller, number)
+                number += 1
         except:
             self.master.updateView2()
 
 
     def createPlotsTemp(self, arduino, controller, number):
         plotframe = Frame(self)
-        if number == 0:
-            plotframe.grid(column=0, row=1, columnspan=3)
         if number == 1:
-            plotframe.grid(column=3, row=1, columnspan=3)
+            plotframe.grid(column=0, row=1, columnspan=3)
         if number == 2:
             plotframe.grid(column=3, row=1, columnspan=3)
         if number == 3:
+            plotframe.grid(column=0, row=2, columnspan=3)
+        if number == 4:
             plotframe.grid(column=3, row=2, columnspan=3)
         label = Label(plotframe, text=arduino)
         label.grid(column=0, row=0)
@@ -465,13 +467,13 @@ class Statistieken(Frame):
 
     def createPlotsLight(self, arduino, controller, number):
         plotframe = Frame(self)
-        if number == 0:
-            plotframe.grid(column=0, row=1, columnspan=3)
         if number == 1:
-            plotframe.grid(column=3, row=1, columnspan=3)
+            plotframe.grid(column=0, row=1, columnspan=3)
         if number == 2:
             plotframe.grid(column=3, row=1, columnspan=3)
         if number == 3:
+            plotframe.grid(column=0, row=2, columnspan=3)
+        if number == 4:
             plotframe.grid(column=3, row=2, columnspan=3)
         label = Label(plotframe, text=arduino)
         label.grid(column=0, row=0)

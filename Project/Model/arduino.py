@@ -120,69 +120,71 @@ class Arduino:
 
     # haal de data van de sonar sensor op en sla het op met de huidige uur:minuut
     def update_distance(self):
-        key = time.strftime('%X')[:6]
-        #key = str(datetime.datetime.now())[11:][:12]
-        r = self.request("get_distance")
-        if r[0] == 'OK':
-            if len(self.distance_history)>9:
-                tempHistcopy = self.distance_history.copy()
-                i=len(self.distance_history)-9
-                for x in tempHistcopy:
-                    if i>0:
-                        i-=1
-                        self.distance_history={}
-                    else:
-                        self.distance_history[x] = tempHistcopy[x]
-            self.distance_history[key] = float(r[1])
-            if len(self.distance_history)<9:
-                i = len(self.distance_history)
-                while i!=9:
-                    self.distance_history[i*' '] = 0.0
-                    i+=1
+        key = time.strftime('%X')[:5]
+        if key not in self.distance_history.keys():
+            r = self.request("get_distance")
+            if r[0] == 'OK':
+                if len(self.distance_history)>9:
+                    tempHistcopy = self.distance_history.copy()
+                    i=len(self.distance_history)-9
+                    for x in tempHistcopy:
+                        if i>0:
+                            i-=1
+                            self.distance_history={}
+                        else:
+                            self.distance_history[x] = tempHistcopy[x]
+                self.distance_history[key] = float(r[1])
+                if len(self.distance_history)<9:
+                    i = len(self.distance_history)
+                    while i!=9:
+                        self.distance_history[i*' '] = 0.0
+                        i+=1
 
 
     # haal de data van de photocell sensor op en sla het op met de huidige uur:minuut
     def update_light(self):
-        key = time.strftime('%X')[:6]
-        r = self.request("get_light")
-        if r[0] == 'OK':
-            if len(self.light_history)>9:
-                tempHistcopy = self.light_history.copy()
-                i=len(self.light_history)-9
-                for x in tempHistcopy:
-                    if i>0:
-                        i-=1
-                        self.light_history={}
-                    else:
-                        self.light_history[x] = tempHistcopy[x]
-            self.light_history[key] = float(r[1])
-        if len(self.light_history) < 9:
-            i = len(self.light_history)
-            while i != 9:
-                self.light_history[i * ' '] = 0.0
-                i += 1
+        key = time.strftime('%X')[:5]
+        if key not in self.light_history.keys():
+            r = self.request("get_light")
+            if r[0] == 'OK':
+                if len(self.light_history)>9:
+                    tempHistcopy = self.light_history.copy()
+                    i=len(self.light_history)-9
+                    for x in tempHistcopy:
+                        if i>0:
+                            i-=1
+                            self.light_history={}
+                        else:
+                            self.light_history[x] = tempHistcopy[x]
+                self.light_history[key] = float(r[1])
+            if len(self.light_history) < 9:
+                i = len(self.light_history)
+                while i != 9:
+                    self.light_history[i * ' '] = 0.0
+                    i += 1
 
     # haal de data van de thermometer op en sla het op met de huidige uur:minuut
     def update_temperature(self):
-        key = time.strftime('%X')[:6]
-        r = self.request("get_temp")
-        print(r)
-        if r[0] == 'OK':
-            if len(self.temperature_history)>9:
-                tempHistcopy = self.temperature_history.copy()
-                i=len(self.temperature_history)-9
-                for x in tempHistcopy:
-                    if i>0:
-                        i-=1
-                        self.temperature_history={}
-                    else:
-                        self.temperature_history[x] = tempHistcopy[x]
-            self.temperature_history[key] = float(r[1])
-            if len(self.temperature_history)<9:
-                i = len(self.temperature_history)
-                while i!=9:
-                    self.temperature_history[i*' '] = 0.0
-                    i+=1
+        key = time.strftime('%X')[:5]
+        if key not in self.temperature_history.keys():
+            r = self.request("get_temp")
+            print(r)
+            if r[0] == 'OK':
+                if len(self.temperature_history)>9:
+                    tempHistcopy = self.temperature_history.copy()
+                    i=len(self.temperature_history)-9
+                    for x in tempHistcopy:
+                        if i>0:
+                            i-=1
+                            self.temperature_history={}
+                        else:
+                            self.temperature_history[x] = tempHistcopy[x]
+                self.temperature_history[key] = float(r[1])
+                if len(self.temperature_history)<9:
+                    i = len(self.temperature_history)
+                    while i!=9:
+                        self.temperature_history[i*' '] = 0.0
+                        i+=1
 
 
     def get_light_threshold(self):
@@ -191,6 +193,7 @@ class Arduino:
 
     def set_light_thres(self, thres):
         oldThres=int(self.get_light_threshold())
+        #oldThres = 0
         thres = int(thres)
         if oldThres>thres:
             times = oldThres-thres
@@ -202,6 +205,7 @@ class Arduino:
             while times!=0:
                 self.request("light_thres_plus")
                 times -= 1
+
     def get_temp_threshold(self):
         tempThres = self.request("get_temp_thres")
         print(tempThres)
