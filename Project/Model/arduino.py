@@ -76,13 +76,13 @@ class Arduino:
     def sendCommand(self, command):
         response = self.request(command)
         while response[0]!= 'OK':
-            print(response)
+            #print(response)
             time.sleep(1)
             response = self.request(command)
         if(response[1]=="empty"):
             time.sleep(0.05)
             response = (response[0], self.ser.readline().decode('ascii').strip())
-        print("command: "+command+" completed, result: "+response[0]+", "+response[1])
+        #print("command: "+command+" completed, result: "+response[0]+", "+response[1])
         #clean-up
         self.ser.readline()
         self.ser.readline()

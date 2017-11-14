@@ -28,7 +28,7 @@ class MainView(Tk):
             if view == 0: #besturing
                 self.view = Besturing(self, self.controller)
                 self.view.active_arduino.set(activeArd)
-                print(self.view.active_arduino.get())
+                #print(self.view.active_arduino.get())
             if view == 1: #instellingen
                 self.view = Instellingen(self)
                 self.view.active_arduino.set(activeArd)
