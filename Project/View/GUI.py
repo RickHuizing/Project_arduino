@@ -1,8 +1,10 @@
+import time
 from tkinter import *
 from tkinter import _setit
-from controller import *
-import time
-import grafiek
+
+from Project.Model.controller import *
+from Project.View import grafiek
+
 
 class MainView(Tk):
     def __init__(self, controller):
@@ -72,6 +74,7 @@ class MainView(Tk):
                     self.view.automatischKnop = Button(self.view, text="automatisch", command=self.view.goAuto, fg="white", bg="dim gray", activebackground="snow4", activeforeground="white")
                     self.view.automatischKnop.grid(row=5, column=2, columnspan=1)
                     self.view.automatischKnop.config(width=20, height=2)
+
                 updateSelectScherm(self.view, self.controller.arduino_list)
             if isinstance(self.view, Instellingen):
                 updateSelectScherm(self.view, self.view.master.controller.arduino_list)
@@ -434,7 +437,6 @@ class Statistieken(Frame):
 
     def createPlotsTemp(self, arduino, controller, number):
         plotframe = Frame(self)
-        print(number, "bla")
         if number == 0:
             plotframe.grid(column=0, row=1, columnspan=3)
         if number == 1:
@@ -470,7 +472,6 @@ class Statistieken(Frame):
 
     def setTempPlot(self, arduino, controller, master):
         lijst = self.getTempHistory(arduino, controller)
-        print(len(lijst))
         if not len(lijst)<1:
             plot = grafiek.Plot(master, lijst)
             self.plotList.append(plot)
@@ -482,7 +483,8 @@ class Statistieken(Frame):
 
     def setLightPlot(self, arduino, controller, master):
         lijst = self.getLightHistory(arduino, controller)
-        print(lijst)
+        #
+        # #print(lijst)
         if not len(lijst)<1:
             plot = grafiek.Plot(master, lijst, light=1)
             self.plotList.append(plot)
@@ -494,7 +496,7 @@ class Statistieken(Frame):
 
     def setDistPlot(self, arduino, controller, master):
         lijst = self.getDistHistory(arduino, controller)
-        print(len(lijst))
+        #print(len(lijst))
         if not len(lijst)<1:
             plot = grafiek.Plot(master, lijst)
             self.plotList.append(plot)

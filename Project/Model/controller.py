@@ -1,7 +1,12 @@
-import arduino
+from Project.Model import arduino
 import sys
-import time
 from serial.tools import list_ports_windows
+import sys
+
+from serial.tools import list_ports_windows
+
+from Project.Model import arduino
+
 
 # bevat een lijst met aangesloten arduino's en functies om de arduino's aan te sturen
 class Controller:

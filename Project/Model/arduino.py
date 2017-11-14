@@ -1,5 +1,6 @@
 import serial
 import time
+import datetime
 import sys
 
 # >>> b'a string'.decode('ascii')
@@ -107,7 +108,7 @@ class Arduino:
                     print("Handshake failed")
 
     def update(self):
-        print(self.request("get_type"))
+        #print(self.request("get_type"))
         if self.type != 0:
             if self.type == 1:
                 self.update_light()
@@ -119,7 +120,8 @@ class Arduino:
 
     # haal de data van de sonar sensor op en sla het op met de huidige uur:minuut
     def update_distance(self):
-        key = time.strftime('%X')[:8]
+        key = time.strftime('%X')[:6]
+        #key = str(datetime.datetime.now())[11:][:12]
         r = self.request("get_distance")
         if r[0] == 'OK':
             if len(self.distance_history)>9:
@@ -132,10 +134,16 @@ class Arduino:
                     else:
                         self.distance_history[x] = tempHistcopy[x]
             self.distance_history[key] = float(r[1])
+            if len(self.distance_history)<9:
+                i = len(self.distance_history)
+                while i!=9:
+                    self.distance_history[i*' '] = 0.0
+                    i+=1
+
 
     # haal de data van de photocell sensor op en sla het op met de huidige uur:minuut
     def update_light(self):
-        key = time.strftime('%X')[:8]
+        key = time.strftime('%X')[:6]
         r = self.request("get_light")
         if r[0] == 'OK':
             if len(self.light_history)>9:
@@ -148,11 +156,15 @@ class Arduino:
                     else:
                         self.light_history[x] = tempHistcopy[x]
             self.light_history[key] = float(r[1])
-
+        if len(self.light_history) < 9:
+            i = len(self.light_history)
+            while i != 9:
+                self.light_history[i * ' '] = 0.0
+                i += 1
 
     # haal de data van de thermometer op en sla het op met de huidige uur:minuut
     def update_temperature(self):
-        key = time.strftime('%X')[:8]
+        key = time.strftime('%X')[:6]
         r = self.request("get_temp")
         print(r)
         if r[0] == 'OK':
@@ -166,6 +178,11 @@ class Arduino:
                     else:
                         self.temperature_history[x] = tempHistcopy[x]
             self.temperature_history[key] = float(r[1])
+            if len(self.temperature_history)<9:
+                i = len(self.temperature_history)
+                while i!=9:
+                    self.temperature_history[i*' '] = 0.0
+                    i+=1
 
 
     def get_light_threshold(self):

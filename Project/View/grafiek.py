@@ -25,7 +25,7 @@ class Plot():
         # init global vars
         self.s = 0
         self.x2 =  self.borderMarge
-        self.y2 = self.borderMarge
+        self.y2 = self.value_to_y(0)
 
 
         self.canvas = Canvas(master, width= self.frameWidth, height= self.frameHeight, bg='white')  # 0,0 is top left corner
@@ -49,7 +49,7 @@ class Plot():
             self.canvas.create_line( self.borderMarge, y,  self.borderMarge+self.maxEntries*self.xAxisSpacing, y, width=1, dash=(2, 5))
             self.canvas.create_text( self.borderMarge-10, y, text='%s' % round((self.yAxisInterval * i),2), anchor=E)
 
-        self.canvas.after(100, self.step)
+        self.canvas.after(0, self.step)
     def step(self):
         for x in self.values:
             x1 = self.x2
