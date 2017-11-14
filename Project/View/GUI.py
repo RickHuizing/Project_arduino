@@ -470,9 +470,9 @@ class Statistieken(Frame):
         label = Label(plotframe, text=arduino)
         label.grid(column=0, row=0)
         plot = self.setTempPlot(arduino, controller, plotframe)
-        plot.canvas.grid(column=1, row=0, columnspan=4)
+        plot.canvas.grid(column=1, row=1, columnspan=4)
         plot2 = self.setDistPlot(arduino, controller, plotframe)
-        plot2.canvas.grid(column=1, row=1, columnspan=4)
+        plot2.canvas.grid(column=1, row=2, columnspan=4)
 
 
     def createPlotsLight(self, arduino, controller, number):
