@@ -237,7 +237,7 @@ def getLight(frame):
     lightLabel.config(width=15, height=1)
 
     try:
-        light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_light")[1][:3] + "lux"
+        light1 = frame.master.master.controller.arduino_list[frame.master.active_arduino.get()].request("get_light")[1][:3] + " lux"
     except:
         light1 = "licht nvt"
     light = Label(frame, bg='white', text=light1, fg="dim gray")

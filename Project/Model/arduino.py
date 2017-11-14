@@ -168,7 +168,7 @@ class Arduino:
         key = time.strftime('%X')[:5]
         if key not in self.temperature_history.keys():
             r = self.request("get_temp")
-            print(r)
+            #print(r)
             if r[0] == 'OK':
                 if len(self.temperature_history)>9:
                     tempHistcopy = self.temperature_history.copy()
@@ -208,7 +208,7 @@ class Arduino:
 
     def get_temp_threshold(self):
         tempThres = self.request("get_temp_thres")
-        print(tempThres)
+        #print(tempThres)
         return tempThres[1][:-2]
     def set_temp_thres(self, thres):
         oldThres=int(self.get_temp_threshold())
